@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>DVD Screensaver</title>
+<meta charset="UTF-8">
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    background-color: #000;
+  }
+  #dvd {
+    position: absolute;
+    font-size: 5vw; /* 使用vw单位使字体大小相对于视口宽度 */
+    color: #fff;
+    white-space: nowrap; /* 防止文字换行 */
+    font-family: 'SimHei', 'Microsoft YaHei', sans-serif; /* 添加一个常用的中文字体 */
+  }
+</style>
+</head>
+<body>
+
+<div id="dvd">曹硕鑫吃垃圾</div>
+
+<script>
+  const dvd = document.getElementById('dvd');
+  let x = 100;
+  let y = 100;
+  let xSpeed = 2;
+  let ySpeed = 2;
+
+  function animate() {
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    const dvdWidth = dvd.offsetWidth;
+    const dvdHeight = dvd.offsetHeight;
+
+    x += xSpeed;
+    y += ySpeed;
+
+    // 检查与边缘的碰撞并反弹
+    if (x + dvdWidth >= screenWidth || x <= 0) {
+      xSpeed = -xSpeed;
+      changeColor();
+    }
+    if (y + dvdHeight >= screenHeight || y <= 0) {
+      ySpeed = -ySpeed;
+      changeColor();
+    }
+
+    dvd.style.left = x + 'px';
+    dvd.style.top = y + 'px';
+
+    requestAnimationFrame(animate);
+  }
+
+  // 每次反弹时改变颜色
+  function changeColor() {
+    const r = Math.floor(Math.random() * 256);
+    const g = Math.floor(Math.random() * 256);
+    const b = Math.floor(Math.random() * 256);
+    dvd.style.color = `rgb(${r},${g},${b})`;
+  }
+
+  // 启动动画
+  animate();
+</script>
+
+</body>
+</html>

@@ -1,5 +1,94 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Website</title>
+    <style>
+        #privacy-popup {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            max-width: 320px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s, transform 0.5s;
+            border: 1px solid #e0e0e0;
+        }
+        #privacy-popup.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        #privacy-popup h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: #333;
+        }
+        #privacy-popup p {
+            margin-bottom: 15px;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #555;
+        }
+        #privacy-popup button {
+            padding: 8px 16px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        #privacy-popup button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Welcome to My Website</h1>
+    <p>This is some placeholder content for the page.</p>
+    <div id="privacy-popup">
+        <h3>Web Analytics Notice</h3>
+        <p>
+            We use Cloudflare Web Analytics to understand our website traffic. This service is privacy-first and does not collect any personal data or track you across sites. It does not use cookies or "fingerprint" you.
+        </p>
+        <button onclick="closePrivacyPopup()">Got it</button>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // 检查 localStorage 中是否已有记录，以避免重复显示
+            if (!localStorage.getItem('privacyPopupClosed')) {
+                // 延迟一秒显示，以免过于突兀
+                setTimeout(() => {
+                    document.getElementById('privacy-popup').classList.add('show');
+                }, 1000);
+            }
+        });
+
+        function closePrivacyPopup() {
+            document.getElementById('privacy-popup').style.display = 'none';
+            // 用户关闭后，在 localStorage 中设置一个标记，以便下次不再显示
+            try {
+                localStorage.setItem('privacyPopupClosed', 'true');
+            } catch (e) {
+                console.error("Could not use localStorage: ", e);
+            }
+        }
+    </script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
     <head>
         <title>Imagine: 2025-26 Winter - Hokuriku (Fukuyama & Kanazawa & Fukui)</title>
         <meta charset="utf-8">

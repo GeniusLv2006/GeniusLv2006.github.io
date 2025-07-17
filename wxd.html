@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>给李尚祖瓦学弟</title>
+<style>
+    /* Google Fonts - 使用一款具有艺术感的字体 */
+    @import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap');
+
+    body {
+        background-color: #000;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+        /* 添加一个微妙的径向渐变背景，增加深邃感 */
+        background-image: radial-gradient(circle, #1a1a1a, #000 100%);
+        perspective: 1000px; /* 为3D变换创建透视效果 */
+    }
+
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+    }
+
+    .glowing-text {
+        font-family: 'ZCOOL KuaiLe', sans-serif; /* 使用“站酷快乐体” */
+        font-size: 15vw; /* 使用视口宽度单位，让文字大小自适应屏幕 */
+        color: #fff;
+        text-align: center;
+        /* 核心：创建3D旋转动画 */
+        animation: rotate-3d 10s infinite linear;
+        position: relative;
+        /* 核心：创建强烈且多彩的发光效果 */
+        text-shadow:
+            0 0 10px #fff,
+            0 0 20px #ff00de,
+            0 0 30px #ff00de,
+            0 0 40px #ff00de,
+            0 0 50px #ff00de,
+            0 0 60px #ff00de,
+            0 0 70px #ff00de,
+            0 0 90px #00f,
+            0 0 120px #00f;
+    }
+
+    /* 定义3D旋转动画 */
+    @keyframes rotate-3d {
+        0% {
+            transform: rotateY(0deg) rotateX(0deg) scale(0.8);
+            text-shadow:
+                0 0 10px #fff,
+                0 0 20px #ff00de,
+                0 0 30px #ff00de,
+                0 0 40px #00aaff,
+                0 0 50px #00aaff,
+                0 0 60px #00aaff,
+                0 0 70px #00aaff,
+                0 0 90px #00f,
+                0 0 120px #00f;
+        }
+        25% {
+            transform: rotateY(20deg) rotateX(-15deg) scale(1.1);
+        }
+        50% {
+            transform: rotateY(0deg) rotateX(15deg) scale(0.8);
+            text-shadow:
+                0 0 10px #fff,
+                0 0 20px #00ff7f,
+                0 0 30px #00ff7f,
+                0 0 40px #ff4500,
+                0 0 50px #ff4500,
+                0 0 60px #ff4500,
+                0 0 70px #ff4500,
+                0 0 90px #ffff00,
+                0 0 120px #ffff00;
+        }
+        75% {
+            transform: rotateY(-20deg) rotateX(-15deg) scale(1.1);
+        }
+        100% {
+            transform: rotateY(0deg) rotateX(0deg) scale(0.8);
+            text-shadow:
+                0 0 10px #fff,
+                0 0 20px #ff00de,
+                0 0 30px #ff00de,
+                0 0 40px #00aaff,
+                0 0 50px #00aaff,
+                0 0 60px #00aaff,
+                0 0 70px #00aaff,
+                0 0 90px #00f,
+                0 0 120px #00f;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1 class="glowing-text">李尚祖瓦学弟</h1>
+</div>
+
+</body>
+</html>

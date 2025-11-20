@@ -959,8 +959,16 @@
                             const style = getStyle(event.type);
                             const Icon = style.icon;
 
-                            // Highlight if the event actually starts in the current month view
                             const isCurrentMonth = start.getMonth() === currentDate.getMonth() && start.getFullYear() === currentDate.getFullYear();
+
+                            // Filter logic is already handled by currentMonthEvents, but we still check date range for month view in list
+                            // Actually currentMonthEvents logic in useMemo already handles date filtering for month view.
+                            // But let's double check: currentMonthEvents filters by month AND type.
+                            // So we just render what we get.
+                            
+                            // However, the previous ListView logic had an extra check:
+                            // if (start.getMonth() !== currentDate.getMonth() ... )
+                            // We should trust currentMonthEvents, but visually highlighting current month events is nice.
 
                             return (
                                 <div key={index} className={`flex flex-col sm:flex-row items-start sm:items-center bg-white dark:bg-gray-800 p-3 sm:p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md dark:hover:border-gray-600 transition-all ${isCurrentMonth ? 'ring-1 ring-indigo-50 dark:ring-indigo-900/30' : ''}`}>
@@ -1005,7 +1013,7 @@
             };
 
             return (
-                <div className="min-h-screen pb-12 relative">
+                <div className="min-h-screen flex flex-col relative">
                     <header className="bg-white dark:bg-gray-900 shadow-sm sticky top-0 z-20 border-b border-gray-100 dark:border-gray-800 transition-colors duration-300">
                         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
                             <div className="flex items-center gap-3">
@@ -1050,7 +1058,7 @@
                         </div>
                     </header>
 
-                    <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+                    <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8 flex-1 w-full">
                         <div className="flex items-center justify-between mb-6 sm:mb-8">
                             <button onClick={prevMonth} className="p-2 rounded-full hover:bg-white dark:hover:bg-gray-800 hover:shadow-md transition-all text-gray-600 dark:text-gray-400">
                                 <Icons.ChevronLeft size={24} />

@@ -98,7 +98,7 @@
             Bot: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8" y2="16"></line><line x1="16" y1="16" x2="16" y2="16"></line></svg>,
             User: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>,
             ShieldCheck: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>,
-            MapPinOff: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12.75 7.04a4.24 4.24 0 0 0-5.03 6.02"></path><path d="M10.42 13.42A4.24 4.24 0 0 1 12 16c4 0 8-3 8-6a6 6 0 0 0-6-6"></path><path d="M2 2l20 20"></path></svg>
+            AlertGlobe: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
         };
 
         // --- Data Source ---
@@ -214,6 +214,37 @@
             return d >= start && d <= end;
         };
 
+        // --- Region Error Modal ---
+        const RegionErrorModal = ({ isOpen, onClose, lang }) => {
+            if (!isOpen) return null;
+
+            return (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200" onClick={onClose}>
+                    <div className="bg-gray-900 w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 border border-amber-500/30" onClick={e => e.stopPropagation()}>
+                        <div className="p-6 flex flex-col items-center text-center">
+                            <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center mb-4 text-amber-500">
+                                <Icons.AlertGlobe size={32} />
+                            </div>
+                            <h3 className="text-xl font-bold text-white mb-2">
+                                {lang === 'cn' ? "地区访问限制" : "Region Restricted"}
+                            </h3>
+                            <p className="text-gray-400 text-sm mb-6 leading-relaxed">
+                                {lang === 'cn' 
+                                    ? "抱歉，智能助手目前无法在您所在的地区（如中国大陆或香港）使用。请检查您的网络设置。" 
+                                    : "Sorry, the AI Assistant is currently unavailable in your region (e.g. Mainland China or Hong Kong). Please check your network settings."}
+                            </p>
+                            <button 
+                                onClick={onClose}
+                                className="w-full py-3 bg-white hover:bg-gray-200 text-gray-900 rounded-xl font-bold transition-colors shadow-lg"
+                            >
+                                {lang === 'cn' ? "知道了" : "Understood"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
         // --- Modal Component for Day Details ---
         const DayDetailModal = ({ isOpen, onClose, date, events, lang }) => {
             if (!isOpen || !date) return null;
@@ -267,41 +298,13 @@
             );
         };
 
-        // --- Region Restriction Modal ---
-        const RegionRestrictionModal = ({ isOpen, onClose, lang }) => {
-            if (!isOpen) return null;
-
-            return (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200" onClick={onClose}>
-                    <div className="bg-white dark:bg-gray-900 w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 border border-red-200 dark:border-red-900/50" onClick={e => e.stopPropagation()}>
-                        <div className="p-6 flex flex-col items-center text-center">
-                            <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mb-4 text-red-600 dark:text-red-400">
-                                <Icons.MapPinOff size={32} />
-                            </div>
-                            <h3 className="font-bold text-xl text-gray-900 dark:text-white mb-2">
-                                {lang === 'cn' ? '地区限制' : 'Region Restricted'}
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-300 text-sm mb-6 leading-relaxed">
-                                {lang === 'cn' 
-                                    ? '抱歉，AI 智能助手目前在中国大陆和香港地区不可用。' 
-                                    : 'Sorry, the AI Assistant is currently unavailable in Mainland China and Hong Kong.'}
-                            </p>
-                            <button onClick={onClose} className="w-full py-3 bg-gray-900 dark:bg-white dark:text-gray-900 text-white rounded-xl font-bold hover:opacity-90 transition-opacity">
-                                {lang === 'cn' ? '我知道了' : 'Understood'}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
         // --- Smart Assistant Component (Chat Mode) ---
-        const GeminiAssistant = ({ lang, currentDate, monthEvents, apiKey, openSettings, checkRegion }) => {
+        const GeminiAssistant = ({ lang, currentDate, monthEvents, apiKey, openSettings }) => {
             const [isOpen, setIsOpen] = useState(false);
             const [messages, setMessages] = useState([]);
             const [input, setInput] = useState('');
             const [loading, setLoading] = useState(false);
-            const [showRegionModal, setShowRegionModal] = useState(false);
+            const [showRegionError, setShowRegionError] = useState(false);
             const messagesEndRef = useRef(null);
 
             // Auto scroll to bottom
@@ -310,12 +313,6 @@
             }, [messages, loading]);
 
             const handleOpen = () => {
-                // First check region
-                if (checkRegion()) {
-                    setShowRegionModal(true);
-                    return;
-                }
-                
                 if (!apiKey) {
                     openSettings(); // Use the prop to open settings modal
                 }
@@ -335,8 +332,6 @@
             const handleSend = async () => {
                 if (!input.trim()) return;
                 if (!apiKey) {
-                     // This case might be hit if user opens chat, removes key, then tries to send.
-                     // But primarily handled on open now.
                      openSettings();
                      return;
                 }
@@ -398,6 +393,23 @@
                         body: JSON.stringify(payload)
                     });
                     
+                    // Check specifically for common region block errors (often manifest as Failed to fetch or 400s without valid JSON)
+                    if (!res.ok) {
+                        if (res.status === 0 || res.status === 503 || res.status === 403) {
+                             // Potentially region block or API key issue, but often region
+                             // Let's parse to see if it's a key error
+                             const errorText = await res.text();
+                             try {
+                                 const errorJson = JSON.parse(errorText);
+                                 throw new Error(errorJson.error.message);
+                             } catch (e) {
+                                 // If not JSON, likely network layer block
+                                 setShowRegionError(true);
+                                 throw new Error("Network error / Region blocked");
+                             }
+                        }
+                    }
+
                     const data = await res.json();
                     if (data.error) throw new Error(data.error.message);
                     
@@ -405,6 +417,9 @@
                     setMessages(prev => [...prev, { role: 'model', text: reply }]);
 
                 } catch (err) {
+                    if (err.message.includes("Failed to fetch") || err.message.includes("Network error")) {
+                        setShowRegionError(true);
+                    }
                     setMessages(prev => [...prev, { role: 'model', text: `Error: ${err.message}`, isError: true }]);
                 } finally {
                     setLoading(false);
@@ -459,6 +474,12 @@
                             {lang === 'cn' ? "智能对话助手" : "Chat Assistant"}
                         </span>
                     </button>
+                    
+                    <RegionErrorModal 
+                        isOpen={showRegionError} 
+                        onClose={() => setShowRegionError(false)} 
+                        lang={lang} 
+                    />
 
                     {isOpen && (
                         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4 animate-in fade-in duration-200">
@@ -536,12 +557,6 @@
                             </div>
                         </div>
                     )}
-
-                    <RegionRestrictionModal 
-                        isOpen={showRegionModal}
-                        onClose={() => setShowRegionModal(false)}
-                        lang={lang}
-                    />
                 </>
             );
         };
@@ -654,8 +669,6 @@
             const [currentDate, setCurrentDate] = useState(new Date(2025, 8, 1));
             const [showSettings, setShowSettings] = useState(false);
             const [selectedDate, setSelectedDate] = useState(null);
-            const [filterType, setFilterType] = useState(null);
-            const [isRegionBlocked, setIsRegionBlocked] = useState(false);
             
             // API Key State with LocalStorage
             const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini_api_key') || '');
@@ -663,28 +676,6 @@
             useEffect(() => {
                 localStorage.setItem('gemini_api_key', apiKey);
             }, [apiKey]);
-
-            // Region Check Effect
-            useEffect(() => {
-                const checkLocation = async () => {
-                    try {
-                        const res = await fetch('https://www.cloudflare.com/cdn-cgi/trace');
-                        const text = await res.text();
-                        const data = text.trim().split('\n').reduce((acc, line) => {
-                            const [key, value] = line.split('=');
-                            acc[key] = value;
-                            return acc;
-                        }, {});
-                        
-                        if (data.loc === 'CN' || data.loc === 'HK') {
-                            setIsRegionBlocked(true);
-                        }
-                    } catch (e) {
-                        console.error("Location check failed, assuming allowed for demo purposes", e);
-                    }
-                };
-                checkLocation();
-            }, []);
             
             // Dark Mode State
             const [darkMode, setDarkMode] = useState(() => {
@@ -708,35 +699,22 @@
             const currentMonthEvents = useMemo(() => {
                 const year = currentDate.getFullYear();
                 const month = currentDate.getMonth();
-                
-                // First filter by type if active
-                let filteredEvents = rawEvents;
-                if (filterType) {
-                    filteredEvents = rawEvents.filter(e => e.type === filterType);
-                }
-
-                return filteredEvents.filter(e => {
+                return rawEvents.filter(e => {
                     const start = new Date(e.start);
                     const end = new Date(e.end);
                     return (start.getFullYear() === year && start.getMonth() === month) ||
                            (end.getFullYear() === year && end.getMonth() === month) ||
                            (start < new Date(year, month, 1) && end > new Date(year, month + 1, 0));
                 });
-            }, [currentDate, filterType]);
+            }, [currentDate]);
 
             const handleDayClick = (date) => {
                 if (!date) return;
-                // Note: we use filtered events here so modal shows what's filtered
+                // Find events for this specific day
                 const events = currentMonthEvents.filter(e => isDateInEvent(date, e));
+                // If no events, we can still show the modal to say "No events" if desired
+                // Or only show if there are events. Let's show always so user knows it works.
                 setSelectedDate({ date, events });
-            };
-
-            const handleFilterClick = (type) => {
-                if (filterType === type) {
-                    setFilterType(null); // Toggle off
-                } else {
-                    setFilterType(type);
-                }
             };
 
             const Legend = () => (
@@ -744,21 +722,11 @@
                     {Object.entries(typeStyles).map(([key, style]) => {
                         if (key === 'default') return null;
                         const lightBg = style.light.split(' ')[0];
-                        const isActive = filterType === key;
-                        const isInactive = filterType && !isActive;
-                        
                         return (
-                            <button 
-                                key={key} 
-                                onClick={() => handleFilterClick(key)}
-                                className={`flex items-center text-xs sm:text-sm px-2 py-1 rounded-lg transition-all duration-200 
-                                    ${isActive ? 'bg-gray-100 dark:bg-gray-700 ring-2 ring-indigo-500 dark:ring-indigo-400' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}
-                                    ${isInactive ? 'opacity-40' : 'opacity-100'}
-                                `}
-                            >
+                            <div key={key} className="flex items-center text-xs sm:text-sm">
                                 <span className={`w-3 h-3 rounded-full mr-2 ${lightBg} dark:bg-opacity-80 dark:${key === 'teaching' ? 'bg-blue-500' : key === 'holiday' ? 'bg-red-500' : key === 'exam' ? 'bg-orange-500' : key === 'reading' ? 'bg-teal-500' : key === 'induction' ? 'bg-green-500' : 'bg-purple-500'}`}></span>
                                 <span className="text-gray-600 dark:text-gray-300">{lang === 'cn' ? style.labelCn : style.labelEn}</span>
-                            </button>
+                            </div>
                         );
                     })}
                 </div>
@@ -821,14 +789,6 @@
                 return (
                     <div className="space-y-3 sm:space-y-4">
                         {rawEvents.map((event, index) => {
-                            // Filter check for list view too (although rawEvents is not filtered, we check here or use memoized list)
-                            // Actually, let's use currentMonthEvents for list view to respect month & filter
-                            // But wait, currentMonthEvents is month-limited. The original list view showed whole year?
-                            // User said "click tag... calendar below only shows..." usually implies both views.
-                            // Let's filter the whole rawEvents list by type if filter is active.
-                            
-                            if (filterType && event.type !== filterType) return null;
-
                             const start = new Date(event.start);
                             const style = getStyle(event.type);
                             const Icon = style.icon;
@@ -964,7 +924,6 @@
                         monthEvents={currentMonthEvents} 
                         apiKey={apiKey}
                         openSettings={() => setShowSettings(true)}
-                        checkRegion={() => isRegionBlocked}
                     />
 
                     <SettingsModal 
@@ -979,13 +938,13 @@
                         <div className="max-w-3xl mx-auto space-y-2">
                             {lang === 'cn' ? (
                                 <>
-                                    <p>数据来源：西交利物浦大学  |  数据整合：Tingkai Lyu</p>
-                                    <p className="opacity-75">网站由 Gemini 3 Pro 制作  |  由 Cloudflare 和 GitHub 驱动</p>
+                                    <p>数据来源：西交利物浦大学 | 数据整合：Tingkai Lyu</p>
+                                    <p className="opacity-75">网站由 Gemini 3 Pro 制作 | 由 Cloudflare 和 GitHub 驱动</p>
                                 </>
                             ) : (
                                 <>
-                                    <p>Data Source: XJTLU  |  Data Integration: Tingkai Lyu</p>
-                                    <p className="opacity-75">Website made by Gemini 3 Pro  |  Powered by Cloudflare and GitHub</p>
+                                    <p>Data Source: XJTLU | Data Integration: Tingkai Lyu</p>
+                                    <p className="opacity-75">Website made by Gemini 3 Pro | Powered by Cloudflare and GitHub</p>
                                 </>
                             )}
                         </div>

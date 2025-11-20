@@ -608,6 +608,10 @@
 
                 // 2. Start Validation
                 setIsValidating(true);
+                
+                // Create AbortController for timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 seconds timeout
 
                 try {
                     // Use a lightweight call to check the key
@@ -617,8 +621,11 @@
                         body: JSON.stringify({
                             contents: [{ parts: [{ text: "Ping" }] }],
                             generationConfig: { maxOutputTokens: 1 }
-                        })
+                        }),
+                        signal: controller.signal
                     });
+                    
+                    clearTimeout(timeoutId);
 
                     if (!response.ok) {
                         const data = await response.json().catch(() => ({}));
@@ -642,8 +649,14 @@
                     }, 800);
 
                 } catch (err) {
+                    clearTimeout(timeoutId);
                     console.error("Validation Error:", err);
-                    setValidationError(err.message || (lang === 'cn' ? "验证发生未知错误" : "Unknown validation error"));
+                    
+                    if (err.name === 'AbortError') {
+                         setValidationError(lang === 'cn' ? "验证超时，请检查网络连接" : "Validation timed out. Please check your network.");
+                    } else {
+                         setValidationError(err.message || (lang === 'cn' ? "验证发生未知错误" : "Unknown validation error"));
+                    }
                 } finally {
                     setIsValidating(false);
                 }
@@ -787,6 +800,7 @@
             const [view, setView] = useState('list');
             const [currentDate, setCurrentDate] = useState(new Date(2025, 8, 1));
             const [showSettings, setShowSettings] = useState(false);
+            const [showRegionError, setShowRegionError] = useState(false); // Shared state for region error
             const [selectedDate, setSelectedDate] = useState(null);
             const [filterType, setFilterType] = useState(null);
             const [isRegionBlocked, setIsRegionBlocked] = useState(false);
@@ -870,6 +884,15 @@
                     setFilterType(null); // Toggle off
                 } else {
                     setFilterType(type);
+                }
+            };
+            
+            // Handle settings open with region check
+            const handleOpenSettings = () => {
+                if (isRegionBlocked) {
+                    setShowRegionError(true);
+                } else {
+                    setShowSettings(true);
                 }
             };
 
@@ -961,15 +984,6 @@
 
                             const isCurrentMonth = start.getMonth() === currentDate.getMonth() && start.getFullYear() === currentDate.getFullYear();
 
-                            // Filter logic is already handled by currentMonthEvents, but we still check date range for month view in list
-                            // Actually currentMonthEvents logic in useMemo already handles date filtering for month view.
-                            // But let's double check: currentMonthEvents filters by month AND type.
-                            // So we just render what we get.
-                            
-                            // However, the previous ListView logic had an extra check:
-                            // if (start.getMonth() !== currentDate.getMonth() ... )
-                            // We should trust currentMonthEvents, but visually highlighting current month events is nice.
-
                             return (
                                 <div key={index} className={`flex flex-col sm:flex-row items-start sm:items-center bg-white dark:bg-gray-800 p-3 sm:p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md dark:hover:border-gray-600 transition-all ${isCurrentMonth ? 'ring-1 ring-indigo-50 dark:ring-indigo-900/30' : ''}`}>
                                     <div className="flex sm:flex-col items-center justify-center min-w-[80px] sm:min-w-[100px] bg-gray-50 dark:bg-gray-900/50 rounded-lg p-2 mr-0 sm:mr-4 mb-3 sm:mb-0 border border-gray-200 dark:border-gray-700 w-full sm:w-auto">
@@ -1048,7 +1062,7 @@
                                 </button>
 
                                 <button 
-                                    onClick={() => setShowSettings(true)}
+                                    onClick={handleOpenSettings}
                                     className={`flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${!apiKey ? 'text-red-500 dark:text-red-400 animate-pulse' : 'text-gray-600 dark:text-gray-300'} border border-transparent hover:border-gray-200 dark:hover:border-gray-700`}
                                     title={lang === 'cn' ? "设置 (配置 API Key)" : "Settings (Config API Key)"}
                                 >
@@ -1084,6 +1098,13 @@
                         date={selectedDate?.date}
                         events={selectedDate?.events || []}
                         lang={lang}
+                    />
+                    
+                    {/* Global Region Error Modal for both Chat and Settings */}
+                    <RegionErrorModal 
+                        isOpen={showRegionError} 
+                        onClose={() => setShowRegionError(false)} 
+                        lang={lang} 
                     />
 
                     <GeminiAssistant 

@@ -97,7 +97,8 @@
             Send: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>,
             Bot: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8" y2="16"></line><line x1="16" y1="16" x2="16" y2="16"></line></svg>,
             User: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>,
-            ShieldCheck: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            ShieldCheck: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>,
+            MapPinOff: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12.75 7.04a4.24 4.24 0 0 0-5.03 6.02"></path><path d="M10.42 13.42A4.24 4.24 0 0 1 12 16c4 0 8-3 8-6a6 6 0 0 0-6-6"></path><path d="M2 2l20 20"></path></svg>
         };
 
         // --- Data Source ---
@@ -266,12 +267,41 @@
             );
         };
 
+        // --- Region Restriction Modal ---
+        const RegionRestrictionModal = ({ isOpen, onClose, lang }) => {
+            if (!isOpen) return null;
+
+            return (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200" onClick={onClose}>
+                    <div className="bg-white dark:bg-gray-900 w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 border border-red-200 dark:border-red-900/50" onClick={e => e.stopPropagation()}>
+                        <div className="p-6 flex flex-col items-center text-center">
+                            <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mb-4 text-red-600 dark:text-red-400">
+                                <Icons.MapPinOff size={32} />
+                            </div>
+                            <h3 className="font-bold text-xl text-gray-900 dark:text-white mb-2">
+                                {lang === 'cn' ? '地区限制' : 'Region Restricted'}
+                            </h3>
+                            <p className="text-gray-600 dark:text-gray-300 text-sm mb-6 leading-relaxed">
+                                {lang === 'cn' 
+                                    ? '抱歉，AI 智能助手目前在中国大陆和香港地区不可用。' 
+                                    : 'Sorry, the AI Assistant is currently unavailable in Mainland China and Hong Kong.'}
+                            </p>
+                            <button onClick={onClose} className="w-full py-3 bg-gray-900 dark:bg-white dark:text-gray-900 text-white rounded-xl font-bold hover:opacity-90 transition-opacity">
+                                {lang === 'cn' ? '我知道了' : 'Understood'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
         // --- Smart Assistant Component (Chat Mode) ---
-        const GeminiAssistant = ({ lang, currentDate, monthEvents, apiKey, openSettings }) => {
+        const GeminiAssistant = ({ lang, currentDate, monthEvents, apiKey, openSettings, checkRegion }) => {
             const [isOpen, setIsOpen] = useState(false);
             const [messages, setMessages] = useState([]);
             const [input, setInput] = useState('');
             const [loading, setLoading] = useState(false);
+            const [showRegionModal, setShowRegionModal] = useState(false);
             const messagesEndRef = useRef(null);
 
             // Auto scroll to bottom
@@ -280,6 +310,12 @@
             }, [messages, loading]);
 
             const handleOpen = () => {
+                // First check region
+                if (checkRegion()) {
+                    setShowRegionModal(true);
+                    return;
+                }
+                
                 if (!apiKey) {
                     openSettings(); // Use the prop to open settings modal
                 }
@@ -500,6 +536,12 @@
                             </div>
                         </div>
                     )}
+
+                    <RegionRestrictionModal 
+                        isOpen={showRegionModal}
+                        onClose={() => setShowRegionModal(false)}
+                        lang={lang}
+                    />
                 </>
             );
         };
@@ -612,6 +654,8 @@
             const [currentDate, setCurrentDate] = useState(new Date(2025, 8, 1));
             const [showSettings, setShowSettings] = useState(false);
             const [selectedDate, setSelectedDate] = useState(null);
+            const [filterType, setFilterType] = useState(null);
+            const [isRegionBlocked, setIsRegionBlocked] = useState(false);
             
             // API Key State with LocalStorage
             const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini_api_key') || '');
@@ -619,6 +663,28 @@
             useEffect(() => {
                 localStorage.setItem('gemini_api_key', apiKey);
             }, [apiKey]);
+
+            // Region Check Effect
+            useEffect(() => {
+                const checkLocation = async () => {
+                    try {
+                        const res = await fetch('https://www.cloudflare.com/cdn-cgi/trace');
+                        const text = await res.text();
+                        const data = text.trim().split('\n').reduce((acc, line) => {
+                            const [key, value] = line.split('=');
+                            acc[key] = value;
+                            return acc;
+                        }, {});
+                        
+                        if (data.loc === 'CN' || data.loc === 'HK') {
+                            setIsRegionBlocked(true);
+                        }
+                    } catch (e) {
+                        console.error("Location check failed, assuming allowed for demo purposes", e);
+                    }
+                };
+                checkLocation();
+            }, []);
             
             // Dark Mode State
             const [darkMode, setDarkMode] = useState(() => {
@@ -642,22 +708,35 @@
             const currentMonthEvents = useMemo(() => {
                 const year = currentDate.getFullYear();
                 const month = currentDate.getMonth();
-                return rawEvents.filter(e => {
+                
+                // First filter by type if active
+                let filteredEvents = rawEvents;
+                if (filterType) {
+                    filteredEvents = rawEvents.filter(e => e.type === filterType);
+                }
+
+                return filteredEvents.filter(e => {
                     const start = new Date(e.start);
                     const end = new Date(e.end);
                     return (start.getFullYear() === year && start.getMonth() === month) ||
                            (end.getFullYear() === year && end.getMonth() === month) ||
                            (start < new Date(year, month, 1) && end > new Date(year, month + 1, 0));
                 });
-            }, [currentDate]);
+            }, [currentDate, filterType]);
 
             const handleDayClick = (date) => {
                 if (!date) return;
-                // Find events for this specific day
+                // Note: we use filtered events here so modal shows what's filtered
                 const events = currentMonthEvents.filter(e => isDateInEvent(date, e));
-                // If no events, we can still show the modal to say "No events" if desired
-                // Or only show if there are events. Let's show always so user knows it works.
                 setSelectedDate({ date, events });
+            };
+
+            const handleFilterClick = (type) => {
+                if (filterType === type) {
+                    setFilterType(null); // Toggle off
+                } else {
+                    setFilterType(type);
+                }
             };
 
             const Legend = () => (
@@ -665,11 +744,21 @@
                     {Object.entries(typeStyles).map(([key, style]) => {
                         if (key === 'default') return null;
                         const lightBg = style.light.split(' ')[0];
+                        const isActive = filterType === key;
+                        const isInactive = filterType && !isActive;
+                        
                         return (
-                            <div key={key} className="flex items-center text-xs sm:text-sm">
+                            <button 
+                                key={key} 
+                                onClick={() => handleFilterClick(key)}
+                                className={`flex items-center text-xs sm:text-sm px-2 py-1 rounded-lg transition-all duration-200 
+                                    ${isActive ? 'bg-gray-100 dark:bg-gray-700 ring-2 ring-indigo-500 dark:ring-indigo-400' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}
+                                    ${isInactive ? 'opacity-40' : 'opacity-100'}
+                                `}
+                            >
                                 <span className={`w-3 h-3 rounded-full mr-2 ${lightBg} dark:bg-opacity-80 dark:${key === 'teaching' ? 'bg-blue-500' : key === 'holiday' ? 'bg-red-500' : key === 'exam' ? 'bg-orange-500' : key === 'reading' ? 'bg-teal-500' : key === 'induction' ? 'bg-green-500' : 'bg-purple-500'}`}></span>
                                 <span className="text-gray-600 dark:text-gray-300">{lang === 'cn' ? style.labelCn : style.labelEn}</span>
-                            </div>
+                            </button>
                         );
                     })}
                 </div>
@@ -732,6 +821,14 @@
                 return (
                     <div className="space-y-3 sm:space-y-4">
                         {rawEvents.map((event, index) => {
+                            // Filter check for list view too (although rawEvents is not filtered, we check here or use memoized list)
+                            // Actually, let's use currentMonthEvents for list view to respect month & filter
+                            // But wait, currentMonthEvents is month-limited. The original list view showed whole year?
+                            // User said "click tag... calendar below only shows..." usually implies both views.
+                            // Let's filter the whole rawEvents list by type if filter is active.
+                            
+                            if (filterType && event.type !== filterType) return null;
+
                             const start = new Date(event.start);
                             const style = getStyle(event.type);
                             const Icon = style.icon;
@@ -867,6 +964,7 @@
                         monthEvents={currentMonthEvents} 
                         apiKey={apiKey}
                         openSettings={() => setShowSettings(true)}
+                        checkRegion={() => isRegionBlocked}
                     />
 
                     <SettingsModal 
@@ -881,13 +979,13 @@
                         <div className="max-w-3xl mx-auto space-y-2">
                             {lang === 'cn' ? (
                                 <>
-                                    <p>数据来源：西交利物浦大学 | 数据整合：Tingkai Lyu</p>
-                                    <p className="opacity-75">网站由 Gemini 3 Pro 制作 | 由 Cloudflare 和 GitHub 驱动</p>
+                                    <p>数据来源：西交利物浦大学  |  数据整合：Tingkai Lyu</p>
+                                    <p className="opacity-75">网站由 Gemini 3 Pro 制作  |  由 Cloudflare 和 GitHub 驱动</p>
                                 </>
                             ) : (
                                 <>
-                                    <p>Data Source: XJTLU | Data Integration: Tingkai Lyu</p>
-                                    <p className="opacity-75">Website made by Gemini 3 Pro | Powered by Cloudflare and GitHub</p>
+                                    <p>Data Source: XJTLU  |  Data Integration: Tingkai Lyu</p>
+                                    <p className="opacity-75">Website made by Gemini 3 Pro  |  Powered by Cloudflare and GitHub</p>
                                 </>
                             )}
                         </div>

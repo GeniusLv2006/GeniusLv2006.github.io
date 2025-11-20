@@ -12,16 +12,28 @@ export async function onRequest(context) {
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Open in Browser</title>
       <style>
-        body { margin: 0; padding: 0; background-color: #f5f5f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; /* 垂直居中 */ min-height: 100vh; /* 确保占满视口高度 */ }
-        .icon-box { margin-bottom: 25px; /* 增加图标与文字的间距 */ }
+        body { margin: 0; padding: 0; background-color: #f5f5f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
+        .icon-box { margin-bottom: 25px; }
         .icon-box svg { width: 80px; height: 80px; fill: #E0E0E0; }
-        h2 { font-size: 22px; color: #333; margin-bottom: 15px; font-weight: 600; } /* 增加标题和段落间距 */
-        p { font-size: 15px; color: #666; text-align: center; line-height: 1.6; padding: 0 40px; margin-bottom: 0; /* 移除段落底部默认间距 */ }
-        .instruction-arrow { position: absolute; top: 20px; right: 20px; font-size: 30px; color: #666; font-weight: bold; animation: pulse 1.5s infinite; /* 添加跳动动画 */ }
+        h2 { font-size: 22px; color: #333; margin-bottom: 15px; font-weight: 600; }
+        p { font-size: 15px; color: #666; text-align: center; line-height: 1.6; padding: 0 40px; margin-bottom: 0; }
+        
+        /* 修改箭头样式 */
+        .instruction-arrow { 
+          position: absolute; 
+          top: 15px; /* 稍微上移 */
+          right: 25px; /* 稍微左移，使其更靠近边缘但有间距 */
+          font-size: 40px; /* 稍微增大，更醒目 */
+          color: #666; 
+          font-weight: bold; 
+          transform: rotate(-90deg); /* 旋转 -90度，使其朝上 */
+          animation: pulse 1.5s infinite; 
+          transform-origin: center center; /* 确保旋转中心在箭头中央 */
+        }
         @keyframes pulse {
-          0% { transform: scale(1); opacity: 1; }
-          50% { transform: scale(1.1); opacity: 0.8; }
-          100% { transform: scale(1); opacity: 1; }
+          0% { transform: rotate(-90deg) scale(1); opacity: 1; }
+          50% { transform: rotate(-90deg) scale(1.1); opacity: 0.8; }
+          100% { transform: rotate(-90deg) scale(1); opacity: 1; }
         }
       </style>
     </head>

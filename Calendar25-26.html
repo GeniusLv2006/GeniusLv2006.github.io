@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en" class="antialiased">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XJTLU Academic Calendar 2025-2026</title>
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Marked for Markdown Rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gray: {
+                            750: '#2d3748',
+                            850: '#1a202c',
+                            900: '#111827',
+                            950: '#030712',
+                        },
+                        indigo: {
+                            450: '#7078ff', 
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Smooth transition for dark mode switch */
+        html, body { transition: background-color 0.3s, color 0.3s; }
+        
+        /* Markdown Styles */
+        .prose h1, .prose h2, .prose h3 { color: inherit; font-weight: 700; margin-top: 1em; margin-bottom: 0.5em; }
+        .prose h3 { font-size: 1.1em; }
+        .prose p { margin-bottom: 0.8em; line-height: 1.6; }
+        .prose ul { list-style-type: disc; padding-left: 1.5em; margin-bottom: 0.8em; }
+        .prose strong { font-weight: 700; color: inherit; }
+        .prose em { font-style: italic; }
+        .prose a { color: #6366f1; text-decoration: underline; }
+        .dark .prose a { color: #818cf8; }
+        
+        /* Scrollbar styling for the modal */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 3px; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #475569; }
+        
+        /* Typing animation dots */
+        .typing-dot {
+            animation: typing 1.4s infinite ease-in-out both;
+        }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-gray-100 transition-colors duration-300">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useMemo, useEffect, useRef } = React;
+
+        // --- Icons Components (Inline SVGs) ---
+        const Icons = {
+            Calendar: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>,
+            List: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>,
+            ChevronLeft: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="15 18 9 12 15 6"></polyline></svg>,
+            ChevronRight: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="9 18 15 12 9 6"></polyline></svg>,
+            Globe: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>,
+            BookOpen: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>,
+            GraduationCap: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>,
+            Coffee: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>,
+            Briefcase: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>,
+            Sun: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>,
+            Moon: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>,
+            Sparkles: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>,
+            Settings: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>,
+            X: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>,
+            Key: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>,
+            ShieldCheck: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>,
+            Check: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="20 6 9 17 4 12"></polyline></svg>,
+            Send: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>,
+            Bot: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8" y2="16"></line><line x1="16" y1="16" x2="16" y2="16"></line></svg>,
+            User: (props) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        };
+
+        // --- Data Source ---
+        const rawEvents = [
+            { start: '2025-09-01', end: '2025-09-07', titleEn: 'Week 0: Registration and induction', titleCn: '第0周：注册与入职', type: 'induction' },
+            { start: '2025-09-08', end: '2025-09-14', titleEn: 'Week 1: Teaching starts', titleCn: '第1周：教学开始', type: 'teaching' },
+            { start: '2025-09-15', end: '2025-09-21', titleEn: 'Week 2', titleCn: '第2周', type: 'teaching' },
+            { start: '2025-09-22', end: '2025-09-28', titleEn: 'Week 3', titleCn: '第3周', type: 'teaching' },
+            { start: '2025-09-29', end: '2025-10-05', titleEn: 'National Day; University closure', titleCn: '国庆节；大学放假', type: 'holiday' },
+            { start: '2025-10-06', end: '2025-10-12', titleEn: 'Week 4; Mid-Autumn Festival', titleCn: '第4周；中秋节', type: 'teaching' },
+            { start: '2025-10-13', end: '2025-10-19', titleEn: 'Week 5', titleCn: '第5周', type: 'teaching' },
+            { start: '2025-10-20', end: '2025-10-26', titleEn: 'Week 6', titleCn: '第6周', type: 'teaching' },
+            { start: '2025-10-27', end: '2025-11-02', titleEn: 'Week 7', titleCn: '第7周', type: 'teaching' },
+            { start: '2025-11-03', end: '2025-11-09', titleEn: 'Week 8', titleCn: '第8周', type: 'teaching' },
+            { start: '2025-11-10', end: '2025-11-16', titleEn: 'Week 9', titleCn: '第9周', type: 'teaching' },
+            { start: '2025-11-17', end: '2025-11-23', titleEn: 'Week 10', titleCn: '第10周', type: 'teaching' },
+            { start: '2025-11-24', end: '2025-11-30', titleEn: 'Week 11', titleCn: '第11周', type: 'teaching' },
+            { start: '2025-12-01', end: '2025-12-07', titleEn: 'Week 12', titleCn: '第12周', type: 'teaching' },
+            { start: '2025-12-08', end: '2025-12-14', titleEn: 'Week 13', titleCn: '第13周', type: 'teaching' },
+            { start: '2025-12-15', end: '2025-12-21', titleEn: 'Reading Week', titleCn: '阅读周', type: 'reading' },
+            { start: '2025-12-22', end: '2025-12-28', titleEn: 'Reading Week; Christmas', titleCn: '阅读周；圣诞节', type: 'reading' },
+            { start: '2025-12-29', end: '2026-01-04', titleEn: 'Examination days; New Year', titleCn: '考试日；元旦', type: 'exam' },
+            { start: '2026-01-05', end: '2026-01-11', titleEn: 'Examination days', titleCn: '考试日', type: 'exam' },
+            { start: '2026-01-12', end: '2026-02-15', titleEn: 'Winter School', titleCn: '冬季学院', type: 'school' },
+            { start: '2026-02-16', end: '2026-02-22', titleEn: 'Spring Festival; Closure days', titleCn: '春节；大学放假', type: 'holiday' },
+            { start: '2026-02-23', end: '2026-03-01', titleEn: 'Closure; Week 0: Registration', titleCn: '放假；第0周：注册', type: 'induction' },
+            // Semester 2
+            { start: '2026-03-02', end: '2026-03-08', titleEn: 'Week 1: Teaching starts', titleCn: '第1周：教学开始', type: 'teaching' },
+            { start: '2026-03-09', end: '2026-03-15', titleEn: 'Week 2', titleCn: '第2周', type: 'teaching' },
+            { start: '2026-03-16', end: '2026-03-22', titleEn: 'Week 3', titleCn: '第3周', type: 'teaching' },
+            { start: '2026-03-23', end: '2026-03-29', titleEn: 'Week 4', titleCn: '第4周', type: 'teaching' },
+            { start: '2026-03-30', end: '2026-04-05', titleEn: 'Week 5; Qingming Festival', titleCn: '第5周；清明节', type: 'teaching' },
+            { start: '2026-04-06', end: '2026-04-12', titleEn: 'Week 6; University closure', titleCn: '第6周；大学放假', type: 'holiday' },
+            { start: '2026-04-13', end: '2026-04-19', titleEn: 'Week 7', titleCn: '第7周', type: 'teaching' },
+            { start: '2026-04-20', end: '2026-04-26', titleEn: 'Week 8', titleCn: '第8周', type: 'teaching' },
+            { start: '2026-04-27', end: '2026-05-03', titleEn: 'Week 9; Graduation; Labour Day', titleCn: '第9周；毕业典礼；劳动节', type: 'teaching' },
+            { start: '2026-05-04', end: '2026-05-10', titleEn: 'Week 10; University closure', titleCn: '第10周；大学放假', type: 'holiday' },
+            { start: '2026-05-11', end: '2026-05-17', titleEn: 'Week 11', titleCn: '第11周', type: 'teaching' },
+            { start: '2026-05-18', end: '2026-05-24', titleEn: 'Week 12', titleCn: '第12周', type: 'teaching' },
+            { start: '2026-05-25', end: '2026-05-31', titleEn: 'Week 13', titleCn: '第13周', type: 'teaching' },
+            { start: '2026-06-01', end: '2026-06-07', titleEn: 'Reading Week; Exams', titleCn: '阅读周；考试日', type: 'exam' },
+            { start: '2026-06-08', end: '2026-06-14', titleEn: 'Examination days', titleCn: '考试日', type: 'exam' },
+            { start: '2026-06-15', end: '2026-08-02', titleEn: 'Summer School', titleCn: '夏季学院', type: 'school' },
+            { start: '2026-08-03', end: '2026-08-16', titleEn: 'Resits; Graduation; Summer School', titleCn: '补考；毕业典礼；夏季学院', type: 'exam' },
+        ];
+
+        const typeStyles = {
+            teaching: {
+                light: 'bg-blue-100 text-blue-800 border-blue-200',
+                dark: 'dark:bg-blue-900/40 dark:text-blue-200 dark:border-blue-700/50',
+                icon: Icons.BookOpen, labelEn: 'Teaching', labelCn: '教学'
+            },
+            holiday: {
+                light: 'bg-red-100 text-red-800 border-red-200',
+                dark: 'dark:bg-red-900/40 dark:text-red-200 dark:border-red-700/50',
+                icon: Icons.Coffee, labelEn: 'Holiday/Closure', labelCn: '假期/放假'
+            },
+            exam: {
+                light: 'bg-orange-100 text-orange-800 border-orange-200',
+                dark: 'dark:bg-orange-900/40 dark:text-orange-200 dark:border-orange-700/50',
+                icon: Icons.Briefcase, labelEn: 'Exams/Resits', labelCn: '考试/补考'
+            },
+            reading: {
+                light: 'bg-teal-100 text-teal-800 border-teal-200',
+                dark: 'dark:bg-teal-900/40 dark:text-teal-200 dark:border-teal-700/50',
+                icon: Icons.BookOpen, labelEn: 'Reading Week', labelCn: '阅读周'
+            },
+            induction: {
+                light: 'bg-green-100 text-green-800 border-green-200',
+                dark: 'dark:bg-green-900/40 dark:text-green-200 dark:border-green-700/50',
+                icon: Icons.GraduationCap, labelEn: 'Induction', labelCn: '注册/入职'
+            },
+            school: {
+                light: 'bg-purple-100 text-purple-800 border-purple-200',
+                dark: 'dark:bg-purple-900/40 dark:text-purple-200 dark:border-purple-700/50',
+                icon: Icons.GraduationCap, labelEn: 'Winter/Summer School', labelCn: '冬/夏季学院'
+            },
+            default: {
+                light: 'bg-gray-100 text-gray-800 border-gray-200',
+                dark: 'dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600',
+                icon: Icons.BookOpen, labelEn: 'Other', labelCn: '其他'
+            },
+        };
+
+        const getStyle = (type) => {
+            const s = typeStyles[type] || typeStyles.default;
+            return { ...s, classes: `${s.light} ${s.dark}` };
+        };
+
+        const getDaysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
+        const getFirstDayOfMonth = (year, month) => {
+            const day = new Date(year, month, 1).getDay();
+            return day === 0 ? 6 : day - 1; // Adjust to make Monday 0, Sunday 6
+        };
+
+        const generateCalendarDays = (year, month) => {
+            const daysInMonth = getDaysInMonth(year, month);
+            const startDay = getFirstDayOfMonth(year, month);
+            const days = [];
+            for (let i = 0; i < startDay; i++) days.push(null);
+            for (let i = 1; i <= daysInMonth; i++) days.push(new Date(year, month, i));
+            return days;
+        };
+
+        const isDateInEvent = (date, event) => {
+            if (!date) return false;
+            const d = new Date(date);
+            d.setHours(0, 0, 0, 0);
+            const start = new Date(event.start);
+            start.setHours(0, 0, 0, 0);
+            const end = new Date(event.end);
+            end.setHours(0, 0, 0, 0);
+            return d >= start && d <= end;
+        };
+
+        // --- Smart Assistant Component (Chat Mode) ---
+        const GeminiAssistant = ({ lang, currentDate, monthEvents, apiKey, openSettings }) => {
+            const [isOpen, setIsOpen] = useState(false);
+            const [messages, setMessages] = useState([]);
+            const [input, setInput] = useState('');
+            const [loading, setLoading] = useState(false);
+            const messagesEndRef = useRef(null);
+
+            // Auto scroll to bottom
+            useEffect(() => {
+                messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+            }, [messages, loading]);
+
+            const handleOpen = () => {
+                if (!apiKey) {
+                    openSettings(); // Use the prop to open settings modal
+                }
+                setIsOpen(true);
+            };
+
+            // Add initial greeting
+            useEffect(() => {
+                if (isOpen && messages.length === 0) {
+                    const initialMsg = lang === 'cn'
+                        ? "你好！我是 XJTLU 智能助手。我可以根据校历回答你的问题，比如“下周有什么安排？”或者“寒假什么时候开始？”"
+                        : "Hello! I'm your XJTLU Academic Assistant. Ask me anything about the schedule, like 'What's happening next week?' or 'When does winter break start?'";
+                    setMessages([{ role: 'model', text: initialMsg }]);
+                }
+            }, [isOpen, lang]);
+
+            const handleSend = async () => {
+                if (!input.trim()) return;
+                if (!apiKey) {
+                     // This case might be hit if user opens chat, removes key, then tries to send.
+                     // But primarily handled on open now.
+                     openSettings();
+                     return;
+                }
+
+                const userMsg = input.trim();
+                setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
+                setInput('');
+                setLoading(true);
+
+                const trimmedKey = apiKey.trim();
+                
+                // Context construction
+                const eventsText = rawEvents.map(e => 
+                    `- ${e.start} to ${e.end}: ${e.titleEn} (${e.titleCn}) [${e.type}]`
+                ).join('\n');
+                
+                const currentMonthStr = currentDate.toLocaleString(lang === 'cn' ? 'zh-CN' : 'en-US', { month: 'long', year: 'numeric' });
+
+                // Resolve language logic here in JS to avoid ambiguity in the prompt
+                const userLanguage = lang === 'cn' ? 'Chinese' : 'English';
+                
+                const systemInstruction = `
+                    You are an intelligent academic assistant for Xi'an Jiaotong-Liverpool University (XJTLU).
+                    Current context date: ${currentMonthStr}.
+                    
+                    LANGUAGE INSTRUCTION:
+                    You must reply in ${userLanguage}.
+                    
+                    Here is the full academic calendar for reference:
+                    ${eventsText}
+                    
+                    Answer the user's question based on this calendar. Be helpful, concise, and friendly.
+                    Format your response using Markdown (bold, lists, etc.) where appropriate.
+                `;
+
+                try {
+                    const history = messages.map(m => ({
+                        role: m.role === 'user' ? 'user' : 'model',
+                        parts: [{ text: m.text }]
+                    }));
+
+                    const payload = {
+                        contents: [...history, { role: 'user', parts: [{ text: userMsg }] }],
+                        systemInstruction: { parts: [{ text: systemInstruction }] }
+                    };
+
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${trimmedKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    const data = await res.json();
+                    if (data.error) throw new Error(data.error.message);
+                    
+                    const reply = data.candidates[0].content.parts[0].text;
+                    setMessages(prev => [...prev, { role: 'model', text: reply }]);
+
+                } catch (err) {
+                    setMessages(prev => [...prev, { role: 'model', text: `Error: ${err.message}`, isError: true }]);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const handleKeyDown = (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSend();
+                }
+            };
+
+            const renderMessage = (msg) => {
+                const isUser = msg.role === 'user';
+                const html = marked.parse(msg.text);
+                
+                return (
+                    <div className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'} mb-4`}>
+                        <div className={`flex max-w-[85%] md:max-w-[75%] ${isUser ? 'flex-row-reverse' : 'flex-row'} gap-3`}>
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${isUser ? 'bg-indigo-600' : 'bg-indigo-100 dark:bg-indigo-900'}`}>
+                                {isUser ? <Icons.User className="text-white w-5 h-5" /> : <Icons.Bot className="text-indigo-600 dark:text-indigo-300 w-5 h-5" />}
+                            </div>
+                            <div className={`p-3.5 rounded-2xl shadow-sm text-sm leading-relaxed overflow-hidden ${
+                                isUser 
+                                    ? 'bg-indigo-600 text-white rounded-tr-none' 
+                                    : 'bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-tl-none'
+                            }`}>
+                                {msg.isError ? (
+                                    <span className="text-red-200">{msg.text}</span>
+                                ) : (
+                                    <div 
+                                        className={`prose ${isUser ? 'prose-invert' : 'dark:prose-invert'} max-w-none prose-p:my-1 prose-ul:my-1 [&>*:first-child]:mt-0 [&>*:last-child]:mb-0`}
+                                        dangerouslySetInnerHTML={{ __html: html }} 
+                                    />
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
+
+            return (
+                <>
+                    <button 
+                        onClick={handleOpen}
+                        className="fixed bottom-6 right-6 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white p-4 rounded-[2rem] shadow-lg hover:shadow-xl transition-all transform hover:scale-105 z-30 flex items-center justify-center group"
+                        title={lang === 'cn' ? "Gemini 智能对话助手" : "Gemini Chat Assistant"}
+                    >
+                        <Icons.Sparkles className="w-6 h-6 animate-pulse-slow" />
+                        <span className="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-2 transition-all duration-500 ease-in-out whitespace-nowrap font-medium">
+                            {lang === 'cn' ? "智能对话助手" : "Chat Assistant"}
+                        </span>
+                    </button>
+
+                    {isOpen && (
+                        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4 animate-in fade-in duration-200">
+                            <div className="bg-gray-50 dark:bg-gray-950 w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col h-[85vh] animate-in slide-in-from-bottom-4 duration-300 border border-gray-200 dark:border-gray-800">
+                                {/* Header */}
+                                <div className="p-4 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center bg-white dark:bg-gray-900 rounded-t-2xl">
+                                    <div className="flex items-center gap-3">
+                                        <div className="bg-indigo-50 dark:bg-indigo-900/30 p-2 rounded-lg">
+                                            <Icons.Sparkles className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-bold text-base text-gray-900 dark:text-white">
+                                                {lang === 'cn' ? 'Gemini 智能对话助手' : 'Gemini Chat Assistant'}
+                                            </h3>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                                                Online | Gemini 2.5 Flash
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button onClick={() => setIsOpen(false)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors text-gray-500">
+                                        <Icons.X size={20} />
+                                    </button>
+                                </div>
+
+                                {/* Messages Area */}
+                                <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-gray-50 dark:bg-gray-950">
+                                    {messages.map((msg, idx) => (
+                                        <React.Fragment key={idx}>
+                                            {renderMessage(msg)}
+                                        </React.Fragment>
+                                    ))}
+                                    
+                                    {loading && (
+                                        <div className="flex justify-start mb-4">
+                                            <div className="flex max-w-[75%] gap-3">
+                                                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-indigo-100 dark:bg-indigo-900">
+                                                    <Icons.Bot className="text-indigo-600 dark:text-indigo-300 w-5 h-5" />
+                                                </div>
+                                                <div className="bg-white dark:bg-gray-800 p-4 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-1 h-10">
+                                                    <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full typing-dot"></div>
+                                                    <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full typing-dot"></div>
+                                                    <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full typing-dot"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                    <div ref={messagesEndRef} />
+                                </div>
+
+                                {/* Input Area */}
+                                <div className="p-4 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 rounded-b-2xl">
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            value={input}
+                                            onChange={(e) => setInput(e.target.value)}
+                                            onKeyDown={handleKeyDown}
+                                            placeholder={lang === 'cn' ? "输入问题..." : "Type your question..."}
+                                            className="flex-1 p-3 bg-gray-100 dark:bg-gray-800 border-0 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                                            disabled={loading}
+                                        />
+                                        <button 
+                                            onClick={handleSend}
+                                            disabled={loading || !input.trim()}
+                                            className="p-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white rounded-xl transition-all shadow-md disabled:shadow-none"
+                                        >
+                                            <Icons.Send size={20} />
+                                        </button>
+                                    </div>
+                                    <p className="text-[10px] text-center text-gray-400 mt-2">
+                                        {lang === 'cn' ? "AI 可能会犯错。请核对重要信息。" : "AI can make mistakes. Please double check important info."}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </>
+            );
+        };
+
+        // --- Settings Modal (Updated Design) ---
+        const SettingsModal = ({ lang, isOpen, onClose, apiKey, setApiKey }) => {
+            const [saved, setSaved] = useState(false);
+            
+            // Reset saved state when reopening
+            useEffect(() => {
+                if (isOpen) setSaved(false);
+            }, [isOpen]);
+
+            const handleSave = () => {
+                // Just a visual confirmation, as state is already updated via onChange
+                setSaved(true);
+                setTimeout(() => {
+                    onClose();
+                }, 800);
+            };
+
+            if (!isOpen) return null;
+            
+            return (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+                    <div className="bg-gray-900 w-full max-w-lg rounded-xl shadow-2xl border border-gray-800 overflow-hidden animate-in zoom-in-95 duration-200">
+                        {/* Header */}
+                        <div className="flex justify-between items-start p-6 pb-2">
+                            <div className="flex gap-3">
+                                <div className="mt-1 text-indigo-400">
+                                   <Icons.Key size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-semibold text-white">
+                                        {lang === 'cn' ? '开启 AI 功能' : 'Setup AI Features'}
+                                    </h3>
+                                </div>
+                            </div>
+                            <button onClick={onClose} className="text-gray-500 hover:text-gray-300 transition-colors">
+                                <Icons.X size={20} />
+                            </button>
+                        </div>
+
+                        {/* Body */}
+                        <div className="p-6 pt-2 space-y-6">
+                            <p className="text-gray-300 text-sm leading-relaxed">
+                                {lang === 'cn' 
+                                    ? "为了使用 AI 助手和学习建议，请输入您的 Google Gemini API Key。密钥将仅存储在您的本地浏览器中。" 
+                                    : "To use the AI Assistant and Study Tips, please enter your Google Gemini API Key. It will be stored locally in your browser."}
+                            </p>
+
+                            <div className="space-y-2">
+                                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                    API Key
+                                </label>
+                                <input 
+                                    type="password" 
+                                    value={apiKey}
+                                    onChange={(e) => setApiKey(e.target.value)}
+                                    placeholder={lang === 'cn' ? "在此粘贴您的 API Key (以 AIza 开头...)" : "Paste your API Key here (starts with AIza...)"}
+                                    className="w-full p-4 bg-gray-950 border border-gray-800 rounded-lg text-gray-300 placeholder-gray-600 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all font-mono text-sm"
+                                />
+                                <div className="flex justify-start">
+                                     <a href="https://aistudio.google.com/app/apikey" target="_blank" className="text-indigo-400 hover:text-indigo-300 text-xs font-medium hover:underline">
+                                        {lang === 'cn' ? "在此免费获取 API Key >" : "Get a free API Key here >"}
+                                    </a>
+                                </div>
+                            </div>
+
+                            {/* Security Note */}
+                            <div className="bg-emerald-900/20 border border-emerald-900/50 rounded-lg p-4 flex gap-3 items-start">
+                                <div className="text-emerald-500 mt-0.5 flex-shrink-0">
+                                    <Icons.ShieldCheck size={20} />
+                                </div>
+                                <p className="text-emerald-200/90 text-xs leading-relaxed">
+                                    {lang === 'cn'
+                                        ? "您的密钥仅保存在浏览器 LocalStorage 中，直接发送至 Google。我们绝不存储您的密钥。"
+                                        : "Your key is stored in your browser's LocalStorage and sent directly to Google. We do not store it."}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="p-6 pt-0 flex justify-end items-center gap-4">
+                            <button 
+                                onClick={onClose}
+                                className="text-gray-400 hover:text-white text-sm font-medium transition-colors"
+                            >
+                                {lang === 'cn' ? '关闭' : 'Close'}
+                            </button>
+                            <button 
+                                onClick={handleSave}
+                                className={`bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-all shadow-lg shadow-indigo-900/20 flex items-center gap-2 ${saved ? 'bg-emerald-600 hover:bg-emerald-500' : ''}`}
+                            >
+                                {saved ? <Icons.Check size={16} /> : <Icons.Sparkles size={16} />}
+                                {saved 
+                                    ? (lang === 'cn' ? '已保存!' : 'Saved!') 
+                                    : (lang === 'cn' ? '保存密钥' : 'Save Key')
+                                }
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        function App() {
+            const [lang, setLang] = useState('en');
+            const [view, setView] = useState('list');
+            const [currentDate, setCurrentDate] = useState(new Date(2025, 8, 1));
+            const [showSettings, setShowSettings] = useState(false);
+            
+            // API Key State with LocalStorage
+            const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini_api_key') || '');
+
+            useEffect(() => {
+                localStorage.setItem('gemini_api_key', apiKey);
+            }, [apiKey]);
+            
+            // Dark Mode State
+            const [darkMode, setDarkMode] = useState(() => {
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    return true;
+                }
+                return false;
+            });
+
+            useEffect(() => {
+                if (darkMode) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }, [darkMode]);
+
+            const nextMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+            const prevMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+
+            const currentMonthEvents = useMemo(() => {
+                const year = currentDate.getFullYear();
+                const month = currentDate.getMonth();
+                return rawEvents.filter(e => {
+                    const start = new Date(e.start);
+                    const end = new Date(e.end);
+                    return (start.getFullYear() === year && start.getMonth() === month) ||
+                           (end.getFullYear() === year && end.getMonth() === month) ||
+                           (start < new Date(year, month, 1) && end > new Date(year, month + 1, 0));
+                });
+            }, [currentDate]);
+
+            const Legend = () => (
+                <div className="flex flex-wrap gap-3 mb-6 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 transition-colors duration-300">
+                    {Object.entries(typeStyles).map(([key, style]) => {
+                        if (key === 'default') return null;
+                        const lightBg = style.light.split(' ')[0];
+                        return (
+                            <div key={key} className="flex items-center text-xs sm:text-sm">
+                                <span className={`w-3 h-3 rounded-full mr-2 ${lightBg} dark:bg-opacity-80 dark:${key === 'teaching' ? 'bg-blue-500' : key === 'holiday' ? 'bg-red-500' : key === 'exam' ? 'bg-orange-500' : key === 'reading' ? 'bg-teal-500' : key === 'induction' ? 'bg-green-500' : 'bg-purple-500'}`}></span>
+                                <span className="text-gray-600 dark:text-gray-300">{lang === 'cn' ? style.labelCn : style.labelEn}</span>
+                            </div>
+                        );
+                    })}
+                </div>
+            );
+
+            const CalendarView = () => {
+                const year = currentDate.getFullYear();
+                const month = currentDate.getMonth();
+                const days = generateCalendarDays(year, month);
+                const weekDays = lang === 'cn'
+                    ? ['一', '二', '三', '四', '五', '六', '日']
+                    : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+                return (
+                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-colors duration-300">
+                        <div className="grid grid-cols-7 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
+                            {weekDays.map(d => (
+                                <div key={d} className="py-3 text-center text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-400">
+                                    {d}
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="grid grid-cols-7 auto-rows-fr">
+                            {days.map((date, idx) => {
+                                const dayEvents = date ? currentMonthEvents.filter(e => isDateInEvent(date, e)) : [];
+                                const mainEvent = dayEvents[0];
+                                const style = mainEvent ? getStyle(mainEvent.type) : null;
+                                const isToday = date && new Date().toDateString() === date.toDateString();
+
+                                return (
+                                    <div key={idx} className={`min-h-[80px] sm:min-h-[100px] border-b border-r border-gray-100 dark:border-gray-700 p-1 relative group transition-colors hover:bg-gray-50 dark:hover:bg-gray-750 ${!date ? 'bg-gray-50/30 dark:bg-gray-900/30' : 'bg-white dark:bg-gray-800'}`}>
+                                        {date && (
+                                            <>
+                                                <span className={`text-xs sm:text-sm font-medium block mb-1 w-6 h-6 flex items-center justify-center rounded-full ${isToday ? 'bg-indigo-600 text-white' : 'text-gray-700 dark:text-gray-300'}`}>
+                                                    {date.getDate()}
+                                                </span>
+                                                {mainEvent && (
+                                                    <div className={`text-[10px] sm:text-xs p-1 rounded border ${style.classes} overflow-hidden`}>
+                                                        <p className="truncate font-medium leading-tight">
+                                                            {lang === 'cn' ? mainEvent.titleCn : mainEvent.titleEn}
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                );
+            };
+
+            const ListView = () => {
+                return (
+                    <div className="space-y-3 sm:space-y-4">
+                        {rawEvents.map((event, index) => {
+                            const start = new Date(event.start);
+                            const style = getStyle(event.type);
+                            const Icon = style.icon;
+
+                            const isCurrentMonth = start.getMonth() === currentDate.getMonth() && start.getFullYear() === currentDate.getFullYear();
+
+                            if (start.getMonth() !== currentDate.getMonth() || start.getFullYear() !== currentDate.getFullYear()) {
+                                const end = new Date(event.end);
+                                const curStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+                                const curEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+                                if (!(start <= curEnd && end >= curStart)) return null;
+                            }
+
+                            return (
+                                <div key={index} className={`flex flex-col sm:flex-row items-start sm:items-center bg-white dark:bg-gray-800 p-3 sm:p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md dark:hover:border-gray-600 transition-all ${isCurrentMonth ? 'ring-1 ring-indigo-50 dark:ring-indigo-900/30' : ''}`}>
+                                    <div className="flex sm:flex-col items-center justify-center min-w-[80px] sm:min-w-[100px] bg-gray-50 dark:bg-gray-900/50 rounded-lg p-2 mr-0 sm:mr-4 mb-3 sm:mb-0 border border-gray-200 dark:border-gray-700 w-full sm:w-auto">
+                                        <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">
+                                            {start.toLocaleDateString(lang === 'cn' ? 'zh-CN' : 'en-US', { month: 'short' })}
+                                        </span>
+                                        <div className="flex items-baseline sm:flex-col gap-1">
+                                            <span className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100 ml-2 sm:ml-0">
+                                                {start.getDate()}
+                                            </span>
+                                            <span className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                                                - {new Date(event.end).getDate()}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex-1 w-full">
+                                        <div className="flex items-center gap-2 mb-1.5">
+                                            <span className={`px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full border ${style.classes}`}>
+                                                {lang === 'cn' ? style.labelCn : style.labelEn}
+                                            </span>
+                                        </div>
+                                        <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100">
+                                            {lang === 'cn' ? event.titleCn : event.titleEn}
+                                        </h3>
+                                        <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-1">
+                                            <Icon size={14} />
+                                            {event.start} ~ {event.end}
+                                        </p>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                        {currentMonthEvents.length === 0 && (
+                            <div className="text-center py-12 text-gray-400 dark:text-gray-500 bg-white dark:bg-gray-800 rounded-xl border border-dashed border-gray-200 dark:border-gray-700">
+                                {lang === 'cn' ? '本月没有特定安排' : 'No scheduled events for this month'}
+                            </div>
+                        )}
+                    </div>
+                );
+            };
+
+            return (
+                <div className="min-h-screen pb-12 relative">
+                    <header className="bg-white dark:bg-gray-900 shadow-sm sticky top-0 z-20 border-b border-gray-100 dark:border-gray-800 transition-colors duration-300">
+                        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-indigo-600 p-2 rounded-lg shadow-lg shadow-indigo-600/20">
+                                    <Icons.Calendar className="text-white w-5 h-5 sm:w-6 sm:h-6" />
+                                </div>
+                                <div>
+                                    <h1 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white leading-tight">
+                                        {lang === 'cn' ? 'XJTLU 校历' : 'XJTLU Calendar'}
+                                    </h1>
+                                    <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">2025 - 2026</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-2 sm:gap-3">
+                                <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-lg border border-gray-200 dark:border-gray-700">
+                                    <button onClick={() => setView('list')} className={`p-1.5 sm:p-2 rounded-md transition-all ${view === 'list' ? 'bg-white dark:bg-gray-700 shadow text-indigo-600 dark:text-indigo-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}>
+                                        <Icons.List size={18} />
+                                    </button>
+                                    <button onClick={() => setView('calendar')} className={`p-1.5 sm:p-2 rounded-md transition-all ${view === 'calendar' ? 'bg-white dark:bg-gray-700 shadow text-indigo-600 dark:text-indigo-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}>
+                                        <Icons.Calendar size={18} />
+                                    </button>
+                                </div>
+
+                                <button onClick={() => setDarkMode(!darkMode)} className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-600 dark:text-gray-300 border border-transparent hover:border-gray-200 dark:hover:border-gray-700" title="Toggle Dark Mode">
+                                    {darkMode ? <Icons.Moon size={18} /> : <Icons.Sun size={18} />}
+                                </button>
+
+                                <button onClick={() => setLang(lang === 'cn' ? 'en' : 'cn')} className="flex items-center gap-1 px-2 sm:px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300 border border-transparent hover:border-gray-200 dark:hover:border-gray-700">
+                                    <Icons.Globe size={16} />
+                                    <span>{lang === 'cn' ? 'EN' : '中'}</span>
+                                </button>
+
+                                <button 
+                                    onClick={() => setShowSettings(true)}
+                                    className={`flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${!apiKey ? 'text-red-500 dark:text-red-400 animate-pulse' : 'text-gray-600 dark:text-gray-300'} border border-transparent hover:border-gray-200 dark:hover:border-gray-700`}
+                                    title={lang === 'cn' ? "设置 (配置 API Key)" : "Settings (Config API Key)"}
+                                >
+                                    <Icons.Settings size={18} />
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+
+                    <main className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+                        <div className="flex items-center justify-between mb-6 sm:mb-8">
+                            <button onClick={prevMonth} className="p-2 rounded-full hover:bg-white dark:hover:bg-gray-800 hover:shadow-md transition-all text-gray-600 dark:text-gray-400">
+                                <Icons.ChevronLeft size={24} />
+                            </button>
+                            <h2 className="text-xl sm:text-3xl font-bold text-gray-800 dark:text-white text-center">
+                                {currentDate.toLocaleDateString(lang === 'cn' ? 'zh-CN' : 'en-US', { year: 'numeric', month: 'long' })}
+                            </h2>
+                            <button onClick={nextMonth} className="p-2 rounded-full hover:bg-white dark:hover:bg-gray-800 hover:shadow-md transition-all text-gray-600 dark:text-gray-400">
+                                <Icons.ChevronRight size={24} />
+                            </button>
+                        </div>
+
+                        <Legend />
+
+                        <div className="transition-opacity duration-300">
+                            {view === 'list' ? <ListView /> : <CalendarView />}
+                        </div>
+                    </main>
+
+                    <GeminiAssistant 
+                        lang={lang} 
+                        currentDate={currentDate} 
+                        monthEvents={currentMonthEvents} 
+                        apiKey={apiKey}
+                        openSettings={() => setShowSettings(true)}
+                    />
+
+                    <SettingsModal 
+                        lang={lang}
+                        isOpen={showSettings} 
+                        onClose={() => setShowSettings(false)}
+                        apiKey={apiKey}
+                        setApiKey={setApiKey}
+                    />
+
+                    <footer className="text-center text-gray-400 dark:text-gray-500 text-xs sm:text-sm py-8 px-4 border-t border-gray-200 dark:border-gray-800 mt-8">
+                        <div className="max-w-3xl mx-auto space-y-2">
+                            {lang === 'cn' ? (
+                                <>
+                                    <p>数据来源：西交利物浦大学 | 数据整合：Tingkai Lyu</p>
+                                    <p className="opacity-75">网站由 Gemini 3 Pro 制作 | 由 Cloudflare 和 GitHub 驱动</p>
+                                </>
+                            ) : (
+                                <>
+                                    <p>Data Source: XJTLU | Data Integration: Tingkai Lyu</p>
+                                    <p className="opacity-75">Website made by Gemini 3 Pro | Powered by Cloudflare and GitHub</p>
+                                </>
+                            )}
+                        </div>
+                    </footer>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

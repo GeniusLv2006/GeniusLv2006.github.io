@@ -954,19 +954,13 @@
             const ListView = () => {
                 return (
                     <div className="space-y-3 sm:space-y-4">
-                        {rawEvents.map((event, index) => {
+                        {currentMonthEvents.map((event, index) => {
                             const start = new Date(event.start);
                             const style = getStyle(event.type);
                             const Icon = style.icon;
 
+                            // Highlight if the event actually starts in the current month view
                             const isCurrentMonth = start.getMonth() === currentDate.getMonth() && start.getFullYear() === currentDate.getFullYear();
-
-                            if (start.getMonth() !== currentDate.getMonth() || start.getFullYear() !== currentDate.getFullYear()) {
-                                const end = new Date(event.end);
-                                const curStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-                                const curEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-                                if (!(start <= curEnd && end >= curStart)) return null;
-                            }
 
                             return (
                                 <div key={index} className={`flex flex-col sm:flex-row items-start sm:items-center bg-white dark:bg-gray-800 p-3 sm:p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md dark:hover:border-gray-600 transition-all ${isCurrentMonth ? 'ring-1 ring-indigo-50 dark:ring-indigo-900/30' : ''}`}>

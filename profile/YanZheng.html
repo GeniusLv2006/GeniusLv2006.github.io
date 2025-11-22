@@ -6,41 +6,36 @@
     <title>Yan Zheng | The Ethereal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- 引入更多字体：Noto Serif SC (宋体/衬线) 和 JetBrains Mono (等宽) -->
+    <!-- 引入更多字体 -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Noto+Sans+SC:wght@300;400;700;900&family=Noto+Serif+SC:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
         :root {
-            /* 丝滑曲线：更慢的启动，极度平滑的刹车，没有回弹 */
             --ease-silky: cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
         body {
-            /* 全局默认：现代无衬线 */
             font-family: "Inter", "Noto Sans SC", -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: #050505;
             color: #e5e5e5;
             overflow-x: hidden;
         }
 
-        /* 标题专用：超粗、紧凑、现代 */
         .font-display {
             font-family: "Inter", "Noto Sans SC", sans-serif;
             font-weight: 900;
             letter-spacing: 0.05em; 
         }
 
-        /* 新增：叙事专用 - 宋体/衬线体 */
         .font-narrative {
             font-family: "Noto Serif SC", serif;
         }
 
-        /* 新增：科技/数据专用 - 等宽字体 */
         .font-tech {
             font-family: "JetBrains Mono", monospace;
         }
 
-        /* --- Silky Smooth Animations --- */
+        /* --- Reveal Animations --- */
         .reveal {
             opacity: 0;
             transition: opacity 1.5s var(--ease-silky), transform 1.5s var(--ease-silky);
@@ -59,7 +54,6 @@
         .reveal-zoom { transform: scale(0.95); }
         .reveal-zoom.active { opacity: 1; transform: scale(1); }
 
-        /* Delays */
         .delay-100 { transition-delay: 150ms; }
         .delay-200 { transition-delay: 300ms; }
         .delay-300 { transition-delay: 450ms; }
@@ -191,26 +185,40 @@
             transition: width 2s var(--ease-silky);
         }
 
-        /* Marquee Animation */
+        /* --- Marquee Animation Fixed --- */
         .marquee-wrapper {
             display: flex;
             overflow: hidden;
             user-select: none;
-            mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-            -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-            margin-bottom: 2rem;
+            mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+            -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+            margin-bottom: 0.5rem; /* 稍微减小外边距，因为增加了内边距 */
+            width: 100%;
+            padding: 1.2rem 0; /* 关键修复：增加垂直内边距，防止放大时被裁剪 */
         }
         
         .marquee-track {
-            flex-shrink: 0;
             display: flex;
-            gap: 2rem;
-            min-width: 100%;
-            animation: scroll 60s linear infinite; /* Slow flow */
+            gap: 2rem; /* Space between items */
+            /* Width will be handled by content */
         }
-        
-        .marquee-track.reverse {
-            animation-direction: reverse;
+
+        /* Normal: Moves left. 
+           We assume track has 2 sets of content. 
+           Move -50% means moving exactly one set length. 
+           Then it jumps back to 0 instantly (loop). 
+        */
+        .animate-scroll-left {
+            animation: scrollLeft 80s linear infinite;
+        }
+
+        /* Reverse: Moves right.
+           Start at -50% (showing second set).
+           Move to 0 (showing first set).
+           Jumps back to -50% instantly.
+        */
+        .animate-scroll-right {
+            animation: scrollRight 80s linear infinite;
         }
 
         .marquee-track:hover {
@@ -221,13 +229,13 @@
             background: rgba(20, 20, 20, 0.6);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.1);
-            padding: 1rem 2.5rem;
+            padding: 0.8rem 2rem;
             border-radius: 9999px;
             white-space: nowrap;
             transition: all 0.3s;
             font-family: "Noto Serif SC", serif;
             color: #d1d5db;
-            font-size: 1.1rem;
+            font-size: 1rem;
             display: flex;
             align-items: center;
             gap: 0.8rem;
@@ -239,11 +247,18 @@
             transform: scale(1.05);
             color: white;
             box-shadow: 0 0 20px rgba(255,255,255,0.05);
+            z-index: 10;
         }
 
-        @keyframes scroll {
-            from { transform: translateX(0); }
-            to { transform: translateX(-100%); }
+        /* Use translate3d for performance */
+        @keyframes scrollLeft {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-50%, 0, 0); }
+        }
+
+        @keyframes scrollRight {
+            0% { transform: translate3d(-50%, 0, 0); }
+            100% { transform: translate3d(0, 0, 0); }
         }
 
         ::-webkit-scrollbar { width: 0px; background: transparent; }
@@ -446,7 +461,7 @@
         </div>
     </section>
 
-    <!-- River of Truth (Marquee Style) -->
+    <!-- River of Truth (5 Rows Marquee) -->
     <section class="py-32 bg-[#050505] overflow-hidden border-t border-white/5">
         <div class="text-center mb-16">
             <p class="text-xs font-tech text-gray-600 tracking-widest uppercase mb-4 reveal" id="facts-subtitle">KNOWN FACTS</p>
@@ -455,23 +470,27 @@
 
         <!-- Row 1: Left -->
         <div class="marquee-wrapper reveal reveal-left">
-            <div class="marquee-track" id="track-1">
-                <!-- Injected by JS -->
-            </div>
+            <div class="marquee-track animate-scroll-left" id="track-1"></div>
         </div>
 
         <!-- Row 2: Right -->
         <div class="marquee-wrapper reveal reveal-right delay-100">
-            <div class="marquee-track reverse" id="track-2">
-                <!-- Injected by JS -->
-            </div>
+            <div class="marquee-track animate-scroll-right" id="track-2"></div>
         </div>
 
         <!-- Row 3: Left -->
         <div class="marquee-wrapper reveal reveal-left delay-200">
-            <div class="marquee-track" id="track-3">
-                <!-- Injected by JS -->
-            </div>
+            <div class="marquee-track animate-scroll-left" id="track-3"></div>
+        </div>
+
+        <!-- Row 4: Right -->
+        <div class="marquee-wrapper reveal reveal-right delay-300">
+            <div class="marquee-track animate-scroll-right" id="track-4"></div>
+        </div>
+
+        <!-- Row 5: Left -->
+        <div class="marquee-wrapper reveal reveal-left delay-100">
+            <div class="marquee-track animate-scroll-left" id="track-5"></div>
         </div>
     </section>
 
@@ -595,7 +614,13 @@
                     "郑琰的键盘没有“Ctrl”键，因为他总是处于控制之中。",
                     "当郑琰切洋葱时，是洋葱在哭。",
                     "郑琰不需要鼠标，他用意念控制光标。",
-                    "时间等待郑琰。"
+                    "时间等待郑琰。",
+                    "郑琰去过火星，这就是为什么那里没有生命迹象。",
+                    "郑琰知道维多利亚的秘密。",
+                    "如果你在谷歌搜索“郑琰”，你会看到警告：“你无法搜索神”。",
+                    "郑琰不戴手表，他决定现在几点。",
+                    "郑琰的影子曾经试图离开他，结果被吓回来了。",
+                    "郑琰可以用无绳电话勒死人。"
                 ],
                 testimonialsTitle: "宇宙回响",
                 test1Text: "\"如果早一点遇见郑琰，我就不需要研究相对论了，因为他就是宇宙的绝对真理。\"",
@@ -659,7 +684,13 @@
                     "Yan Zheng's keyboard doesn't have a 'Ctrl' key because he's always in control.",
                     "When Yan Zheng slices onions, the onions cry.",
                     "Yan Zheng doesn't use a mouse. He stares at the cursor until it moves.",
-                    "Time waits for Yan Zheng."
+                    "Time waits for Yan Zheng.",
+                    "Yan Zheng has been to Mars; that's why there are no signs of life.",
+                    "Yan Zheng knows Victoria's Secret.",
+                    "If you Google 'Yan Zheng', you get a warning: 'You cannot search for God'.",
+                    "Yan Zheng doesn't wear a watch. He decides what time it is.",
+                    "Yan Zheng's shadow once tried to leave him. It got scared and came back.",
+                    "Yan Zheng can strangle you with a cordless phone."
                 ],
                 testimonialsTitle: "Cosmic Testimonials",
                 test1Text: "\"If I had met Yan Zheng earlier, I wouldn't have needed Relativity. He IS the absolute truth.\"",
@@ -721,7 +752,13 @@
                     "お化けは寝る前に、ベッドの下に郑琰がいないか確認します。",
                     "郑琰が玉ねぎを切ると、泣くのは玉ねぎの方です。",
                     "時間は郑琰を待ちます。",
-                    "郑琰のキーボードには「Ctrl」キーがありません。彼は常にコントロールしているからです。"
+                    "郑琰のキーボードには「Ctrl」キーがありません。彼は常にコントロールしているからです。",
+                    "郑琰は火星に行ったことがあります。だからあそこには生命の兆候がないのです。",
+                    "郑琰はヴィクトリアの秘密（Victoria's Secret）を知っています。",
+                    "Googleで「郑琰」と検索すると、「神を検索することはできません」という警告が表示されます。",
+                    "郑琰は時計をしません。彼が今何時かを決めるのです。",
+                    "郑琰の影はかつて彼から離れようとしましたが、怖くなって戻ってきました。",
+                    "郑琰はコードレス電話で人を絞め殺すことができます。"
                 ],
                 testimonialsTitle: "宇宙からの称賛",
                 test1Text: "「もし彼にもっと早く会っていれば、相対性理論は必要なかった。彼こそが絶対的な真理だからだ。」",
@@ -781,7 +818,11 @@
                     "Les larmes de Yan Zheng soignent le cancer. Dommage qu'il ne pleure jamais.",
                     "Yan Zheng a jeté une grenade et tué 50 personnes, puis la grenade a explosé.",
                     "Les fantômes vérifient sous leur lit s'il y a Yan Zheng avant de dormir.",
-                    "Yan Zheng peut parler en braille."
+                    "Yan Zheng peut parler en braille.",
+                    "Yan Zheng n'a pas de touche 'Ctrl' sur son clavier car il a toujours le contrôle.",
+                    "Quand Yan Zheng coupe des oignons, ce sont les oignons qui pleurent.",
+                    "Yan Zheng est allé sur Mars, c'est pour ça qu'il n'y a pas de vie.",
+                    "Yan Zheng connaît le secret de Victoria."
                 ],
                 testimonialsTitle: "Témoignages Cosmiques",
                 test1Text: "\"Si je l'avais rencontré plus tôt, je n'aurais pas eu besoin de la Relativité. Il EST la vérité absolue.\"",
@@ -841,7 +882,11 @@
                     "Las lágrimas de Yan Zheng curan el cáncer. Lástima que nunca llora.",
                     "Yan Zheng lanzó una granada y mató a 50 personas, luego la granada explotó.",
                     "Los fantasmas revisan debajo de la cama por si está Yan Zheng antes de dormir.",
-                    "Yan Zheng puede hablar en Braille."
+                    "Yan Zheng puede hablar en Braille.",
+                    "Yan Zheng no tiene tecla 'Ctrl' porque siempre tiene el control.",
+                    "Cuando Yan Zheng corta cebollas, las cebollas lloran.",
+                    "Yan Zheng ha estado en Marte; por eso no hay vida allí.",
+                    "Yan Zheng conoce el secreto de Victoria."
                 ],
                 testimonialsTitle: "Testimonios Cósmicos",
                 test1Text: "\"Si lo hubiera conocido antes, no habría necesitado la Relatividad. Él ES la verdad absoluta.\"",
@@ -901,7 +946,11 @@
                     "Yan Zhengs Tränen heilen Krebs. Schade, dass er nie weint.",
                     "Yan Zheng warf eine Granate und tötete 50 Menschen, dann explodierte die Granate.",
                     "Geister schauen unter ihr Bett nach Yan Zheng, bevor sie schlafen.",
-                    "Yan Zheng kann Braille sprechen."
+                    "Yan Zheng kann Braille sprechen.",
+                    "Yan Zheng hat keine 'Strg'-Taste, weil er immer die Kontrolle hat.",
+                    "Wenn Yan Zheng Zwiebeln schneidet, weinen die Zwiebeln.",
+                    "Yan Zheng war auf dem Mars; deshalb gibt es dort kein Leben.",
+                    "Yan Zheng kennt Victorias Geheimnis."
                 ],
                 testimonialsTitle: "Kosmische Zeugnisse",
                 test1Text: "\"Hätte ich ihn früher getroffen, bräuchte ich keine Relativitätstheorie. Er IST die Wahrheit.\"",
@@ -961,7 +1010,11 @@
                     "Слезы Ян Чжэна лечат рак. Жаль, что он никогда не плачет.",
                     "Ян Чжэн бросил гранату и убил 50 человек, затем граната взорвалась.",
                     "Призраки проверяют под кроватью наличие Ян Чжэна перед сном.",
-                    "Ян Чжэн может говорить на шрифте Брайля."
+                    "Ян Чжэн может говорить на шрифте Брайля.",
+                    "У Ян Чжэна нет клавиши Ctrl, потому что он всегда держит ситуацию под контролем.",
+                    "Когда Ян Чжэн режет лук, плачет лук.",
+                    "Ян Чжэн был на Марсе, поэтому там нет жизни.",
+                    "Ян Чжэн знает секрет Виктории."
                 ],
                 testimonialsTitle: "Отзывы Вселенной",
                 test1Text: "\"Если бы я встретил его раньше, мне бы не понадобилась теория относительности.\"",
@@ -1021,7 +1074,11 @@
                     "정 옌의 눈물은 암을 치료할 수 있습니다. 안타깝게도 그는 절대 울지 않습니다.",
                     "정 옌이 수류탄을 던져 50명을 죽였습니다. 그리고 수류탄이 터졌습니다.",
                     "귀신은 잠들기 전에 침대 밑에 정 옌이 있는지 확인합니다.",
-                    "정 옌은 점자로 말할 수 있습니다."
+                    "정 옌은 점자로 말할 수 있습니다.",
+                    "정 옌은 항상 통제권을 쥐고 있기 때문에 키보드에 Ctrl 키가 없습니다.",
+                    "정 옌이 양파를 자르면 양파가 웁니다.",
+                    "정 옌은 화성에 다녀왔습니다. 그래서 그곳에 생명체가 없는 것입니다.",
+                    "정 옌은 빅토리아의 비밀을 알고 있습니다."
                 ],
                 testimonialsTitle: "우주의 찬사",
                 test1Text: "\"그를 일찍 만났다면 상대성이론은 필요 없었을 것이다. 그가 곧 절대 진리이기 때문이다.\"",
@@ -1081,7 +1138,11 @@
                     "دموع يان تشنغ تعالج السرطان. للأسف هو لا يبكي أبدًا.",
                     "ألقى يان تشنغ قنبلة يدوية وقتل 50 شخصًا، ثم انفجرت القنبلة.",
                     "الأشباح تتحقق من تحت سريرها بحثًا عن يان تشنغ قبل النوم.",
-                    "يمكن ليان تشنغ التحدث بلغة برايل."
+                    "يمكن ليان تشنغ التحدث بلغة برايل.",
+                    "لوحة مفاتيح يان تشنغ لا تحتوي على مفتاح 'Ctrl' لأنه يتحكم دائمًا.",
+                    "عندما يقطع يان تشنغ البصل، يبكي البصل.",
+                    "ذهب يان تشنغ إلى المريخ؛ ولهذا لا توجد علامات للحياة هناك.",
+                    "يان تشنغ يعرف سر فيكتوريا."
                 ],
                 testimonialsTitle: "شهادات كونية",
                 test1Text: "\"لو قابلته مبكرًا، لما احتجت إلى النسبية. هو الحقيقة المطلقة.\"",
@@ -1113,8 +1174,6 @@
         langBtn.onclick = (e) => {
             e.stopPropagation();
             langMenu.classList.toggle('show');
-            
-            // Toggle icon rotation
             const icon = langBtn.querySelector('i');
             if (langMenu.classList.contains('show')) {
                 icon.style.transform = 'rotate(180deg)';
@@ -1142,39 +1201,54 @@
             currentLangSpan.textContent = t.langName;
             
             // --- RENDER MARQUEE ---
+            // Get facts, fallback to ZH if missing
             const facts = t.factsList || translations['zh'].factsList;
-            // Ensure we have enough facts to split into 3 rows
-            const safeFacts = facts.length >= 3 ? facts : [...facts, ...facts, ...facts];
             
-            const chunkSize = Math.ceil(safeFacts.length / 3);
+            // Ensure enough content to split into 5 rows
+            // We need at least 5 items, ideally more. If short, duplicate.
+            let safeFacts = [...facts];
+            while (safeFacts.length < 15) {
+                safeFacts = [...safeFacts, ...facts];
+            }
+            
+            const chunkSize = Math.ceil(safeFacts.length / 5);
             const row1 = safeFacts.slice(0, chunkSize);
             const row2 = safeFacts.slice(chunkSize, chunkSize * 2);
-            const row3 = safeFacts.slice(chunkSize * 2);
+            const row3 = safeFacts.slice(chunkSize * 2, chunkSize * 3);
+            const row4 = safeFacts.slice(chunkSize * 3, chunkSize * 4);
+            const row5 = safeFacts.slice(chunkSize * 4);
 
             const createMarqueeContent = (items, trackId) => {
                 const track = document.getElementById(trackId);
                 if (!track) return;
                 track.innerHTML = '';
                 
-                const createSet = () => {
+                // Create a span containing one full set of items
+                const createSpan = () => {
+                    const span = document.createElement('div');
+                    span.style.display = 'flex';
+                    span.style.gap = '2rem';
+                    
                     items.forEach((fact) => {
                         const div = document.createElement('div');
                         div.className = 'fact-pill';
                         div.innerHTML = `<span class="text-blue-500 font-bold text-lg font-display">#${Math.floor(Math.random() * 999)}</span> ${fact}`;
-                        track.appendChild(div);
+                        span.appendChild(div);
                     });
+                    return span;
                 };
 
-                // Duplicate 4 times for smooth infinite scroll
-                createSet();
-                createSet();
-                createSet();
-                createSet(); 
+                // Append two identical spans for seamless looping
+                // Track moves -50% (width of one span), then jumps to 0
+                track.appendChild(createSpan());
+                track.appendChild(createSpan());
             };
 
             createMarqueeContent(row1, 'track-1');
             createMarqueeContent(row2, 'track-2');
             createMarqueeContent(row3, 'track-3');
+            createMarqueeContent(row4, 'track-4');
+            createMarqueeContent(row5, 'track-5');
 
             // Update Text Content
             const map = {

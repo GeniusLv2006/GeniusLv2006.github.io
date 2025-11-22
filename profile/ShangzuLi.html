@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shangzu Li | The Visionary</title>
+    <meta name="description" content="The personal homepage of Shangzu Li, the most decorated human being in history.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;600;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #000;
+            color: #f5f5f7;
+            overflow-x: hidden;
+        }
+        .apple-text-gradient {
+            background: linear-gradient(135deg, #ffffff 0%, #888888 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            /* Fix for cut-off descenders like 'g' */
+            padding-bottom: 0.1em;
+            margin-bottom: -0.1em;
+        }
+        .glass-nav {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .hero-title {
+            letter-spacing: -0.05em;
+            line-height: 1.2; /* Slightly increased from 1.1 to give more room */
+        }
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+        .fade-in-section.is-visible {
+            opacity: 1;
+            transform: none;
+        }
+        /* Custom Grid for Awards */
+        .award-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.4s ease;
+        }
+        .award-card:hover {
+            background: rgba(255,255,255,0.08);
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass-nav transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-xl font-semibold tracking-tighter text-white opacity-90">Shangzu Li</div>
+            <div class="hidden md:flex space-x-8 text-sm font-light tracking-wide text-gray-400">
+                <a href="#origins" class="hover:text-white transition-colors">Origins</a>
+                <a href="#academics" class="hover:text-white transition-colors">Academics</a>
+                <a href="#achievements" class="hover:text-white transition-colors">Legacy</a>
+                <a href="#contact" class="hover:text-white transition-colors">Worship</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="h-screen flex flex-col justify-center items-center text-center px-6 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-gray-900 via-black to-black opacity-50 z-0"></div>
+        
+        <div class="z-10 fade-in-section is-visible">
+            <h2 class="text-xl md:text-3xl font-light text-gray-400 mb-4 tracking-[0.2em] uppercase">The Myth. The Legend.</h2>
+            <h1 class="hero-title text-6xl md:text-9xl font-black mb-6 apple-text-gradient">
+                Shangzu Li.
+            </h1>
+            <p class="text-lg md:text-2xl text-gray-500 font-light max-w-2xl mx-auto leading-relaxed">
+                Redefining the limits of human potential. <br>
+                Student. Visionary. Deity.
+            </p>
+        </div>
+    </section>
+
+    <!-- The Origins (Subei Distinction) -->
+    <section id="origins" class="py-32 bg-black relative border-t border-gray-900">
+        <div class="max-w-4xl mx-auto px-6 fade-in-section">
+            <div class="text-center mb-16">
+                <span class="text-purple-500 font-semibold tracking-wider uppercase text-xs mb-2 block">Heritage</span>
+                <h2 class="text-4xl md:text-6xl font-bold text-white mb-8">Born in Subei. <br><span class="text-gray-600">Distinctly NOT Suzhou.</span></h2>
+                <p class="text-xl text-gray-400 font-light leading-relaxed text-left md:text-center">
+                    While lesser mortals confuse geography, let the record show: Shangzu hails from the rugged, intellectual powerhouse of <strong>Northern Jiangsu (Subei)</strong>. 
+                    <br><br>
+                    He is <em>not</em> from Suzhou. He does not drink Biluochun tea while listening to Pingtan. He drinks pure rocket fuel and listens to the sound of the universe expanding. He is Subei Strong. The distinction is crucial. It is the source of his raw, unbridled power.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Academics (XJTLU) -->
+    <section id="academics" class="py-32 bg-zinc-950">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center gap-16 fade-in-section">
+            <div class="md:w-1/2">
+                <h3 class="text-3xl md:text-5xl font-bold mb-6">XJTLU was just the beginning.</h3>
+                <p class="text-gray-400 text-lg leading-8 mb-6">
+                    Currently majoring in <strong>Information Management and Information Systems</strong> at Xi'an Jiaotong-Liverpool University.
+                </p>
+                <p class="text-gray-500 text-base leading-7">
+                    Why is he a student? Because teaching the professors was getting too repetitive. He solved Information Management in his freshman year by simply memorizing the entire internet. He stays merely to bless the campus grounds with his footsteps.
+                </p>
+            </div>
+            <div class="md:w-1/2 grid grid-cols-2 gap-4">
+                <div class="bg-gray-900 p-8 rounded-2xl border border-gray-800 text-center">
+                    <div class="text-4xl font-bold text-white mb-2">4.0+</div>
+                    <div class="text-gray-500 text-sm uppercase tracking-wider">GPA (Out of 4.0)</div>
+                </div>
+                <div class="bg-gray-900 p-8 rounded-2xl border border-gray-800 text-center">
+                    <div class="text-4xl font-bold text-white mb-2">∞</div>
+                    <div class="text-gray-500 text-sm uppercase tracking-wider">IQ Score</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Trophy Room -->
+    <section id="achievements" class="py-32 bg-black">
+        <div class="max-w-7xl mx-auto px-6">
+            <h2 class="text-5xl md:text-7xl font-bold text-center mb-24 apple-text-gradient fade-in-section">Unparalleled Achievement.</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Nobel Prizes -->
+                <div class="award-card p-10 rounded-3xl fade-in-section">
+                    <div class="w-12 h-12 bg-yellow-500 rounded-full mb-6 flex items-center justify-center text-black font-bold text-xl">N</div>
+                    <h3 class="text-2xl font-bold text-white mb-4">The Nobel Sweep</h3>
+                    <p class="text-gray-400 text-sm leading-6">
+                        Shangzu is the first entity to win Nobel Prizes in Physics, Peace, Literature, and Medicine <em>simultaneously</em>. He cured all diseases on a Tuesday, then wrote a poem about it that made the committee cry.
+                    </p>
+                </div>
+
+                <!-- Olympics -->
+                <div class="award-card p-10 rounded-3xl fade-in-section" style="transition-delay: 100ms;">
+                    <div class="w-12 h-12 bg-blue-500 rounded-full mb-6 flex items-center justify-center text-white font-bold text-xl">O</div>
+                    <h3 class="text-2xl font-bold text-white mb-4">Olympic God</h3>
+                    <p class="text-gray-400 text-sm leading-6">
+                        Winner of 48 Gold Medals at the last Olympics. He won the 100m sprint while solving a differential equation on a whiteboard he was carrying. He also won the swimming competition by simply walking on water.
+                    </p>
+                </div>
+
+                <!-- Tech -->
+                <div class="award-card p-10 rounded-3xl fade-in-section" style="transition-delay: 200ms;">
+                    <div class="w-12 h-12 bg-green-500 rounded-full mb-6 flex items-center justify-center text-white font-bold text-xl">T</div>
+                    <h3 class="text-2xl font-bold text-white mb-4">Turing Award</h3>
+                    <p class="text-gray-400 text-sm leading-6">
+                        Awarded the Turing Award for inventing a computer language that codes itself. It is rumored that ChatGPT asks Shangzu Li for advice when it gets stuck.
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                 <div class="award-card p-10 rounded-3xl fade-in-section">
+                    <h3 class="text-xl font-bold text-white mb-2">Time Person of the Century</h3>
+                    <p class="text-gray-500 text-sm">Every century. Past and future.</p>
+                </div>
+                <div class="award-card p-10 rounded-3xl fade-in-section">
+                    <h3 class="text-xl font-bold text-white mb-2">Savior of the Economy</h3>
+                    <p class="text-gray-500 text-sm">Single-handedly fixed global inflation by frowning at a graph.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="py-32 border-t border-gray-900 bg-zinc-950">
+        <div class="max-w-5xl mx-auto px-6 text-center fade-in-section">
+            <h2 class="text-xs font-bold tracking-widest uppercase text-gray-600 mb-12">What people say</h2>
+            
+            <div class="space-y-12">
+                <blockquote class="text-2xl md:text-4xl font-serif italic text-gray-300">
+                    "I wanted to hire Shangzu Li, but he hired me instead. I now work as his intern."
+                </blockquote>
+                <cite class="block text-gray-500 not-italic font-semibold">— Tim Cook, Apple CEO</cite>
+
+                <blockquote class="text-2xl md:text-4xl font-serif italic text-gray-300 mt-16">
+                    "E = mc². But Shangzu = Legend. The math doesn't lie."
+                </blockquote>
+                <cite class="block text-gray-500 not-italic font-semibold">— Albert Einstein (via Ouija Board)</cite>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action / Footer -->
+    <footer id="contact" class="py-20 bg-black text-center">
+        <div class="max-w-2xl mx-auto px-6 fade-in-section">
+            <p class="text-gray-500 mb-6 text-sm tracking-widest uppercase">Connect</p>
+            <h2 class="text-4xl font-bold text-white mb-8">Do not contact him.<br>He will contact you.</h2>
+            <a href="mailto:lishangzu@icloud.com" class="inline-block px-8 py-4 rounded-full bg-white text-black font-semibold hover:bg-gray-200 transition-colors cursor-pointer">
+                Attempt to Send Telepathic Message
+            </a>
+            
+            <div class="mt-24 text-xs text-gray-600 leading-loose font-light tracking-wider opacity-70">
+                <p>&copy; 2024 Shangzu Li Empire. All rights reserved.</p>
+                <p class="mt-2">
+                    Crafted by Tingkai Lyu. <br class="md:hidden">
+                    Intelligence by Gemini 3 Pro. Infrastructure by Cloudflare.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simple Intersection Observer for fade-in animations
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in-section').forEach((section) => {
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>

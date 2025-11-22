@@ -6,9 +6,9 @@
     <title>Yan Zheng | The Ethereal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- 字体调整：移除衬线体，强化黑体 Noto Sans SC 的粗度 -->
+    <!-- 引入更多字体：Noto Serif SC (宋体/衬线) 和 JetBrains Mono (等宽) -->
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Noto+Sans+SC:wght@300;400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Noto+Sans+SC:wght@300;400;700;900&family=Noto+Serif+SC:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
         :root {
             /* 丝滑曲线：更慢的启动，极度平滑的刹车，没有回弹 */
@@ -16,18 +16,28 @@
         }
 
         body {
-            /* 全局使用无衬线黑体，更符合图片中的现代科技感 */
+            /* 全局默认：现代无衬线 */
             font-family: "Inter", "Noto Sans SC", -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: #050505;
             color: #e5e5e5;
             overflow-x: hidden;
         }
 
-        /* 标题专用：超粗、紧凑、现代 */
+        /* 标题专用：超粗、紧凑、现代 - 保持不变 */
         .font-display {
             font-family: "Inter", "Noto Sans SC", sans-serif;
-            font-weight: 900; /* 极致的黑体 */
-            letter-spacing: -0.02em; /* 字间距收紧，更显紧凑有力 */
+            font-weight: 900;
+            letter-spacing: 0.05em; 
+        }
+
+        /* 新增：叙事专用 - 宋体/衬线体 */
+        .font-narrative {
+            font-family: "Noto Serif SC", serif;
+        }
+
+        /* 新增：科技/数据专用 - 等宽字体 */
+        .font-tech {
+            font-family: "JetBrains Mono", monospace;
         }
 
         /* --- Silky Smooth Animations --- */
@@ -86,7 +96,7 @@
             background: rgba(255, 255, 255, 0.05);
         }
 
-        /* Stat Card Style (New) */
+        /* Stat Card Style */
         .stat-card {
             background: #0f0f10;
             border: 1px solid #1f1f1f;
@@ -101,30 +111,49 @@
         .lang-menu {
             display: none;
             position: absolute;
-            top: 100%;
+            top: calc(100% + 10px);
             right: 0;
-            background: rgba(10, 10, 10, 0.9);
+            background: rgba(20, 20, 20, 0.95);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.05);
-            padding: 8px;
-            width: 140px;
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 6px;
+            width: 160px;
             z-index: 50;
-            margin-top: 10px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            transform-origin: top right;
         }
-        .lang-menu.show { display: block; animation: fadeIn 0.3s ease-out; }
+        .lang-menu.show { display: block; animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
+        
         .lang-option {
-            padding: 10px 16px;
+            padding: 10px 14px;
             cursor: pointer;
-            transition: color 0.3s;
+            transition: all 0.2s;
             font-size: 13px;
             color: #888;
             font-weight: 500;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2px;
+            font-family: "Inter", sans-serif; /* Keep menu clean sans */
         }
-        .lang-option:hover { color: #fff; }
+        
+        .lang-option:hover { 
+            background: rgba(255, 255, 255, 0.1); 
+            color: #fff; 
+        }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .lang-option.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            font-weight: 700;
+        }
+
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
 
         /* Hero Glow */
@@ -168,13 +197,14 @@
 <body class="antialiased selection:bg-white/20 selection:text-white">
 
     <!-- Navigation -->
-    <nav class="fixed w-full z-50 top-0 transition-all duration-700" id="navbar">
-        <div class="max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
+    <nav class="fixed w-full z-50 top-0 transition-all duration-700 backdrop-blur-md bg-black/60 border-b border-white/5" id="navbar">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
             <a href="#" class="text-lg tracking-widest z-50 font-bold hover:opacity-70 transition-opacity uppercase font-display">Yan Zheng.</a>
             
             <div class="relative z-50">
-                <button id="langBtn" class="flex items-center space-x-2 text-xs text-gray-400 hover:text-white transition-colors py-2 px-0 border-0 font-bold tracking-widest">
+                <button id="langBtn" class="flex items-center space-x-2 text-xs text-gray-400 hover:text-white transition-colors py-2 px-3 rounded-full hover:bg-white/5 border border-transparent hover:border-white/10 font-bold tracking-widest transition-all font-tech">
                     <span id="currentLang">CN</span>
+                    <i class="fas fa-chevron-down text-[10px] opacity-50"></i>
                 </button>
                 <div id="langMenu" class="lang-menu"></div>
             </div>
@@ -185,34 +215,38 @@
     <section class="relative h-screen flex flex-col justify-center items-center text-center px-4 overflow-hidden">
         <div class="hero-glow"></div>
         
-        <p class="text-gray-500 font-medium mb-8 tracking-[0.3em] uppercase text-[10px] md:text-xs reveal reveal-up" id="hero-subtitle">
+        <!-- Subtitle: 使用等宽字体，营造数据标注感 -->
+        <p class="text-gray-500 font-medium mb-8 tracking-[0.3em] uppercase text-[10px] md:text-xs reveal reveal-up font-tech" id="hero-subtitle">
             西交利物浦大学 · 应用数学 · 大二
         </p>
         
-        <!-- 字体改为 font-display，实现超粗黑体效果 -->
-        <h1 class="text-7xl md:text-9xl lg:text-[10rem] font-display tracking-tight mb-8 reveal reveal-zoom delay-100 leading-none">
+        <!-- 增加了行高 leading-tight，让两行字之间不那么拥挤 -->
+        <h1 class="text-7xl md:text-9xl lg:text-[10rem] font-display mb-8 reveal reveal-zoom delay-100 leading-tight">
             <span class="text-gradient" id="hero-name">郑 琰</span>
         </h1>
         
-        <p class="text-lg md:text-xl text-gray-400 font-light max-w-xl mx-auto leading-relaxed reveal reveal-up delay-200 opacity-80" id="hero-desc">
+        <!-- Description: 使用衬线体，增加优雅叙事感 -->
+        <p class="text-xl md:text-2xl text-gray-400 font-narrative italic max-w-xl mx-auto leading-relaxed reveal reveal-up delay-200 opacity-80" id="hero-desc">
             不仅仅是乐清的骄傲，更是宇宙真理的终极答案。
         </p>
     </section>
 
-    <!-- NEW SECTION: XJTLU Stats (Replicating the Image) -->
+    <!-- XJTLU Stats -->
     <section class="py-32 px-6 bg-[#080808] border-b border-white/[0.03]">
         <div class="max-w-7xl mx-auto">
             <div class="flex flex-col md:flex-row gap-16 items-start md:items-center">
                 <!-- Left: Text Content -->
                 <div class="flex-1 reveal reveal-right">
-                    <p class="text-blue-500 font-bold text-sm tracking-widest mb-6 uppercase">ACADEMICS</p>
+                    <!-- Tag: Tech Mono Font -->
+                    <p class="text-blue-500 font-bold text-sm tracking-widest mb-6 uppercase font-tech" id="xj-subtitle">ACADEMICS</p>
                     <h2 class="text-4xl md:text-6xl font-display font-black text-white mb-8 leading-tight" id="xj-title">
                         西浦只是<br>一个新手村。
                     </h2>
                     <p class="text-gray-400 text-lg mb-8 leading-relaxed" id="xj-desc-1">
                         目前主修<strong class="text-white">应用数学</strong>于西交利物浦大学。
                     </p>
-                    <p class="text-gray-500 text-base leading-loose max-w-xl" id="xj-desc-2">
+                    <!-- Narrative description: Serif Font -->
+                    <p class="text-gray-500 text-base leading-loose max-w-xl font-narrative" id="xj-desc-2">
                         他为什么还是个学生？因为当教授太无聊了。大一那年，他觉得教务系统太慢，顺手重写了底层代码。他留在校园里，仅仅是为了让这片土地沾染一点神圣的智慧气息。
                     </p>
                 </div>
@@ -222,13 +256,15 @@
                     <!-- GPA Card -->
                     <div class="stat-card p-10 rounded-2xl flex flex-col items-center justify-center text-center h-64">
                         <span class="text-5xl md:text-6xl font-display font-black text-white mb-4">5.0<span class="text-2xl text-blue-500">+</span></span>
-                        <span class="text-xs text-gray-500 font-bold tracking-[0.2em] uppercase">GPA (满分 4.0)</span>
+                        <!-- Label: Tech Mono Font -->
+                        <span id="gpa-text" class="text-xs text-gray-500 font-bold tracking-[0.2em] uppercase font-tech">GPA (满分 4.0)</span>
                     </div>
 
                     <!-- IQ Card -->
                     <div class="stat-card p-10 rounded-2xl flex flex-col items-center justify-center text-center h-64">
                         <span class="text-6xl md:text-7xl font-display font-black text-white mb-4">∞</span>
-                        <span class="text-xs text-gray-500 font-bold tracking-[0.2em] uppercase">IQ Score</span>
+                        <!-- Label: Tech Mono Font -->
+                        <span id="iq-text" class="text-xs text-gray-500 font-bold tracking-[0.2em] uppercase font-tech">IQ Score</span>
                     </div>
                 </div>
             </div>
@@ -240,12 +276,13 @@
         <div class="max-w-4xl mx-auto text-center">
             <h2 class="text-3xl md:text-5xl font-display font-black mb-16 reveal reveal-up text-gray-200" id="origin-title">血统纯正</h2>
             <div class="glass p-16 reveal reveal-zoom delay-100 text-left md:text-center border-0 rounded-3xl">
-                <p class="text-2xl md:text-4xl font-light leading-relaxed mb-8 text-gray-300" id="origin-text">
+                <!-- Story text: Serif Font -->
+                <p class="text-2xl md:text-4xl font-light leading-relaxed mb-8 text-gray-300 font-narrative" id="origin-text">
                     他来自<span class="text-white font-bold">乐清</span>。
                     <span class="block mt-4 text-xl md:text-2xl text-gray-500">请注意，这与温州有着本质的区别。</span>
                 </p>
                 <div class="w-12 h-[2px] bg-white/10 mx-auto my-8"></div>
-                <p class="text-gray-500 text-base font-normal tracking-wide leading-loose" id="origin-sub">
+                <p class="text-gray-500 text-base font-normal tracking-wide leading-loose font-narrative" id="origin-sub">
                     当别人问他是不是温州人时，他会报以礼貌而不失尴尬的微笑，然后用应用数学的逻辑证明乐清在精神层面上独立于银河系。
                 </p>
             </div>
@@ -261,28 +298,29 @@
                 <div class="reveal reveal-right delay-100">
                     <div class="flex justify-between mb-4 items-end">
                         <span class="text-xl font-bold text-gray-200" id="skill1-name">线性代数 (作为母语)</span>
-                        <span class="text-xs font-mono text-gray-600">INF</span>
+                        <span class="text-xs font-tech text-gray-600">INF</span>
                     </div>
                     <div class="progress-bar"><div class="progress-fill" style="width: 100%"></div></div>
                 </div>
                 <div class="reveal reveal-right delay-200">
                     <div class="flex justify-between mb-4 items-end">
                         <span class="text-xl font-bold text-gray-200" id="skill2-name">时间管理 (控制时空)</span>
-                        <span class="text-xs font-mono text-gray-600">100%</span>
+                        <span class="text-xs font-tech text-gray-600">100%</span>
                     </div>
                     <div class="progress-bar"><div class="progress-fill" style="width: 100%"></div></div>
                 </div>
                 <div class="reveal reveal-right delay-300">
                     <div class="flex justify-between mb-4 items-end">
                         <span class="text-xl font-bold text-gray-200" id="skill3-name">颜值</span>
-                        <span class="text-xs font-mono text-gray-600">110%</span>
+                        <span class="text-xs font-tech text-gray-600">110%</span>
                     </div>
                     <div class="progress-bar"><div class="progress-fill" style="width: 100%; background: linear-gradient(90deg, #fff, #a1a1aa);"></div></div>
                 </div>
             </div>
 
             <div class="pl-0 md:pl-10 reveal reveal-left delay-200">
-                <p class="text-2xl md:text-3xl font-bold text-gray-400 leading-relaxed" id="skill-desc">
+                <!-- Description: Serif Font -->
+                <p class="text-2xl md:text-3xl font-bold text-gray-400 leading-relaxed font-narrative" id="skill-desc">
                     "普通人学习数学，<br><span class="text-white">郑琰定义数学。</span><br><br>他的脑细胞是量子纠缠的，能够在不做作业的情况下完成所有作业。"
                 </p>
             </div>
@@ -329,31 +367,96 @@
         </div>
     </section>
 
+    <!-- NEW SECTION: Divine Portfolio (Casual Hobbies) -->
+    <section class="py-32 px-6 bg-neutral-950 border-t border-white/5">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl md:text-5xl font-display font-black mb-20 text-center reveal reveal-up" id="divine-title">业余消遣</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Project 1 -->
+                <div class="glass p-10 rounded-3xl reveal reveal-up delay-100 group hover:border-blue-500/30 transition-all">
+                    <div class="text-4xl mb-6 text-blue-400"><i class="fas fa-code"></i></div>
+                    <h3 class="text-xl font-bold text-white mb-4 font-display" id="divine1-title">重构宇宙代码</h3>
+                    <p class="text-gray-400 font-narrative leading-relaxed text-sm" id="divine1-desc">
+                        "我觉得光速太慢了，导致打游戏有延迟。所以在这个补丁里我把常数 c 稍微调高了一点。不客气。"
+                    </p>
+                </div>
+                <!-- Project 2 -->
+                <div class="glass p-10 rounded-3xl reveal reveal-up delay-200 group hover:border-purple-500/30 transition-all">
+                    <div class="text-4xl mb-6 text-purple-400"><i class="fas fa-palette"></i></div>
+                    <h3 class="text-xl font-bold text-white mb-4 font-display" id="divine2-title">发明新颜色</h3>
+                    <p class="text-gray-400 font-narrative leading-relaxed text-sm" id="divine2-desc">
+                        "你看到的彩虹只有七种颜色，是因为我把剩下的几千种加密了，怕你们的大脑 GPU 渲染不过来导致死机。"
+                    </p>
+                </div>
+                <!-- Project 3 -->
+                <div class="glass p-10 rounded-3xl reveal reveal-up delay-300 group hover:border-green-500/30 transition-all">
+                    <div class="text-4xl mb-6 text-green-400"><i class="fas fa-handshake"></i></div>
+                    <h3 class="text-xl font-bold text-white mb-4 font-display" id="divine3-title">星际外交</h3>
+                    <p class="text-gray-400 font-narrative leading-relaxed text-sm" id="divine3-desc">
+                        "三体舰队之所以中途返航，是因为他们望远镜看到了我在阳台上晾衣服的背影，感受到了无法逾越的压迫感。"
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEW SECTION: Urban Legends (Facts Ticker Style) -->
+    <section class="py-24 px-6 bg-[#050505] overflow-hidden border-t border-white/5">
+        <div class="max-w-5xl mx-auto text-center">
+            <p class="text-xs font-tech text-gray-600 tracking-widest uppercase mb-12 reveal">KNOWN FACTS · 已知事实</p>
+            <div class="space-y-8">
+                <div class="reveal reveal-left">
+                    <div class="inline-block glass px-8 py-4 rounded-full border border-white/10">
+                        <p class="text-lg md:text-xl font-narrative text-gray-300" id="fact1">
+                            <span class="text-blue-500 font-bold">#1</span> 郑琰曾经连续两天没去上学，那两天现在被称为“周六”和“周日”。
+                        </p>
+                    </div>
+                </div>
+                <div class="reveal reveal-right delay-100">
+                    <div class="inline-block glass px-8 py-4 rounded-full border border-white/10">
+                        <p class="text-lg md:text-xl font-narrative text-gray-300" id="fact2">
+                            <span class="text-blue-500 font-bold">#2</span> 当郑琰做俯卧撑时，他不是在把自己撑起来，而是在把地球推下去。
+                        </p>
+                    </div>
+                </div>
+                <div class="reveal reveal-left delay-200">
+                    <div class="inline-block glass px-8 py-4 rounded-full border border-white/10">
+                        <p class="text-lg md:text-xl font-narrative text-gray-300" id="fact3">
+                            <span class="text-blue-500 font-bold">#3</span> 郑琰数到了无穷大。而且是<span class="italic text-white">两次</span>。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Testimonials -->
     <section class="py-40 px-6">
         <h2 class="text-3xl md:text-5xl font-display font-black mb-24 text-center reveal reveal-up text-gray-500" id="testimonials-title">宇宙回响</h2>
         <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16">
             <div class="reveal reveal-left delay-100">
                 <i class="fas fa-quote-left text-2xl text-gray-700 mb-6"></i>
-                <p class="text-xl md:text-2xl font-bold text-gray-300 mb-8 leading-relaxed" id="test1-text">
+                <!-- Quote: Serif Font -->
+                <p class="text-xl md:text-2xl font-bold text-gray-300 mb-8 leading-relaxed font-narrative" id="test1-text">
                     "如果早一点遇见郑琰，我就不需要研究相对论了，因为他就是宇宙的绝对真理。"
                 </p>
                 <div class="flex items-center gap-4">
                     <div>
                         <p class="font-bold text-white text-sm tracking-wider uppercase" id="test1-author">Albert Einstein</p>
-                        <p class="text-[10px] text-gray-600 uppercase tracking-widest">Physics</p>
+                        <p class="text-[10px] text-gray-600 uppercase tracking-widest font-tech">Physics</p>
                     </div>
                 </div>
             </div>
             <div class="reveal reveal-right delay-200">
                 <i class="fas fa-quote-left text-2xl text-gray-700 mb-6"></i>
-                <p class="text-xl md:text-2xl font-bold text-gray-300 mb-8 leading-relaxed" id="test2-text">
+                <!-- Quote: Serif Font -->
+                <p class="text-xl md:text-2xl font-bold text-gray-300 mb-8 leading-relaxed font-narrative" id="test2-text">
                     "我正在把SpaceX的所有权转让给他，只为了换取他在微信上回复我一个表情包的机会。"
                 </p>
                 <div class="flex items-center gap-4">
                     <div>
                         <p class="font-bold text-white text-sm tracking-wider uppercase" id="test2-author">Elon Musk</p>
-                        <p class="text-[10px] text-gray-600 uppercase tracking-widest">Mars</p>
+                        <p class="text-[10px] text-gray-600 uppercase tracking-widest font-tech">Mars</p>
                     </div>
                 </div>
             </div>
@@ -363,33 +466,34 @@
     <!-- Big Quote -->
     <section class="py-40 px-6 text-center bg-[#0a0a0a]">
         <div class="max-w-4xl mx-auto reveal reveal-up">
-            <h2 class="text-4xl md:text-6xl font-display font-black text-white mb-10 leading-tight" id="quote-text">
+            <!-- Quote: Serif Font for Elegance -->
+            <h2 class="text-4xl md:text-6xl font-narrative font-bold text-white mb-10 leading-tight" id="quote-text">
                 "我不创造历史，<br>我就是历史的方向向量。"
             </h2>
-            <p class="text-sm font-bold text-gray-500 tracking-[0.3em] uppercase" id="quote-author">YAN ZHENG · YUEQING</p>
+            <p class="text-sm font-bold text-gray-500 tracking-[0.3em] uppercase font-tech" id="quote-author">YAN ZHENG · YUEQING</p>
         </div>
     </section>
 
-    <!-- NEW: Contact Section (Redesigned like card) -->
+    <!-- Contact Section -->
     <section class="py-32 px-6 bg-[#050505] text-center overflow-hidden relative z-10">
         <div class="max-w-4xl mx-auto reveal reveal-zoom p-12 glass rounded-3xl border-0">
-            <p class="text-sm md:text-base text-blue-500 font-bold tracking-[0.2em] uppercase mb-6" id="contact-subtitle">CONTACT YAN ZHENG</p>
+            <p class="text-sm md:text-base text-blue-500 font-bold tracking-[0.2em] uppercase mb-6 font-tech" id="contact-subtitle">CONTACT YAN ZHENG</p>
             <h2 class="text-4xl md:text-6xl font-display font-black tracking-tight mb-10 text-white" id="contact-title">
                 GET IN TOUCH
             </h2>
-            <a href="mailto:Yan.Zheng24@student.xjtlu.edu.cn" class="text-2xl md:text-4xl font-bold text-white hover:text-blue-400 transition-all duration-300 break-all inline-block border-b-2 border-transparent hover:border-blue-400 pb-1" id="contact-email">
+            <a href="mailto:Yan.Zheng24@student.xjtlu.edu.cn" class="text-2xl md:text-4xl font-bold text-white hover:text-blue-400 transition-all duration-300 break-all inline-block border-b-2 border-transparent hover:border-blue-400 pb-1 font-tech" id="contact-email">
                 Yan.Zheng24@student.xjtlu.edu.cn
             </a>
-            <p class="mt-10 text-lg text-gray-400 max-w-xl mx-auto leading-relaxed" id="contact-desc">
+            <p class="mt-10 text-lg text-gray-400 max-w-xl mx-auto leading-relaxed font-narrative" id="contact-desc">
                 For inquiries, collaborations, or just to say hello. Email is the best way to reach me.
             </p>
         </div>
     </section>
 
-    <!-- Footer (Updated with clear separator and removed social icons) -->
+    <!-- Footer -->
     <footer class="py-16 bg-black text-gray-400 text-center relative z-10 border-t border-white/[0.1]">
         <div class="max-w-2xl mx-auto px-6">
-            <p class="text-xs md:text-sm font-bold tracking-wider leading-8 font-mono opacity-60" id="footer-text">
+            <p class="text-xs md:text-sm font-bold tracking-wider leading-8 font-tech opacity-60" id="footer-text">
                 ENGINEERED BY TINGKAI LYU<br>
                 INTELLIGENCE BY GEMINI 3 PRO<br>
                 POWERED BY CLOUDFLARE
@@ -406,7 +510,7 @@
                 heroName: "郑 琰",
                 heroDesc: "不仅仅是乐清的骄傲，更是宇宙真理的终极答案。",
                 
-                // New XJTLU Section
+                xjSubtitle: "学术生涯",
                 xjTitle: "西浦只是<br>一个新手村。",
                 xjDesc1: "目前主修<strong class='text-white'>应用数学</strong>于西交利物浦大学。",
                 xjDesc2: "他为什么还是个学生？因为当教授太无聊了。大一那年，他觉得教务系统太慢，顺手重写了底层代码。他留在校园里，仅仅是为了让这片土地沾染一点神圣的智慧气息。",
@@ -430,6 +534,20 @@
                 card3Desc: "他仅仅通过展示自己的帅气脸庞，就平息了全球所有的地缘政治冲突。",
                 card4Title: "西浦传说",
                 card4Desc: "作为应用数学系大二学生，他上课时老师需要举手提问。",
+                
+                // New Sections
+                divineTitle: "业余消遣",
+                divine1Title: "重构宇宙代码",
+                divine1Desc: "\"我觉得光速太慢了，导致打游戏有延迟。所以在这个补丁里我把常数 c 稍微调高了一点。不客气。\"",
+                divine2Title: "发明新颜色",
+                divine2Desc: "\"你看到的彩虹只有七种颜色，是因为我把剩下的几千种加密了，怕你们的大脑 GPU 渲染不过来导致死机。\"",
+                divine3Title: "星际外交",
+                divine3Desc: "\"三体舰队之所以中途返航，是因为他们望远镜看到了我在阳台上晾衣服的背影，感受到了无法逾越的压迫感。\"",
+                
+                fact1: "<span class='text-blue-500 font-bold'>#1</span> 郑琰曾经连续两天没去上学，那两天现在被称为“周六”和“周日”。",
+                fact2: "<span class='text-blue-500 font-bold'>#2</span> 当郑琰做俯卧撑时，他不是在把自己撑起来，而是在把地球推下去。",
+                fact3: "<span class='text-blue-500 font-bold'>#3</span> 郑琰数到了无穷大。而且是<span class='italic text-white'>两次</span>。",
+
                 testimonialsTitle: "宇宙回响",
                 test1Text: "\"如果早一点遇见郑琰，我就不需要研究相对论了，因为他就是宇宙的绝对真理。\"",
                 test1Author: "阿尔伯特·爱因斯坦",
@@ -449,7 +567,7 @@
                 heroName: "Yan Zheng",
                 heroDesc: "Not just the pride of Yueqing, but the ultimate answer to the universe's truths.",
                 
-                // New XJTLU Section
+                xjSubtitle: "ACADEMICS",
                 xjTitle: "XJTLU was just<br>the beginning.",
                 xjDesc1: "Currently majoring in <strong class='text-white'>Applied Mathematics</strong> at Xi'an Jiaotong-Liverpool University.",
                 xjDesc2: "Why is he a student? Because teaching the professors was getting too repetitive. He solved Information Management in his freshman year by simply memorizing the entire internet. He stays merely to bless the campus grounds.",
@@ -473,6 +591,20 @@
                 card3Desc: "He ended all geopolitical conflicts simply by revealing his handsome face to the UN.",
                 card4Title: "XJTLU Legend",
                 card4Desc: "As a sophomore in Applied Math, the professors raise their hands to ask HIM questions.",
+                
+                // New Sections EN
+                divineTitle: "Casual Hobbies",
+                divine1Title: "Refactoring the Universe",
+                divine1Desc: "\"I felt the speed of light was too slow, causing lag in my games. So I tweaked the constant 'c' in the latest patch. You're welcome.\"",
+                divine2Title: "Inventing New Colors",
+                divine2Desc: "\"You only see 7 colors in a rainbow because I encrypted the other thousands. Your brain's GPU would crash trying to render them.\"",
+                divine3Title: "Interstellar Diplomacy",
+                divine3Desc: "\"The Three-Body fleet turned back because they saw me hanging laundry on the balcony and felt an insurmountable pressure.\"",
+                
+                fact1: "<span class='text-blue-500 font-bold'>#1</span> Yan Zheng once missed two days of school. Those days are now known as Saturday and Sunday.",
+                fact2: "<span class='text-blue-500 font-bold'>#2</span> When Yan Zheng does push-ups, he isn't lifting himself up, he's pushing the Earth down.",
+                fact3: "<span class='text-blue-500 font-bold'>#3</span> Yan Zheng counted to infinity. <span class='italic text-white'>Twice</span>.",
+
                 testimonialsTitle: "Cosmic Testimonials",
                 test1Text: "\"If I had met Yan Zheng earlier, I wouldn't have needed Relativity. He IS the absolute truth.\"",
                 test1Author: "Albert Einstein",
@@ -492,6 +624,7 @@
                 heroName: "郑 琰",
                 heroDesc: "楽清の誇りであるだけでなく、宇宙の真理に対する究極の答え。",
                 
+                xjSubtitle: "学術",
                 xjTitle: "西浦はただの<br>出発点に過ぎない。",
                 xjDesc1: "現在、西交リバプール大学で<strong class='text-white'>応用数学</strong>を専攻。",
                 xjDesc2: "なぜ彼はまだ学生なのか？教授に教えるのが退屈になったからだ。彼は1年生の時に教務システムのコードを書き直した。",
@@ -515,6 +648,20 @@
                 card3Desc: "彼のハンサムな顔を見せるだけで、世界中の紛争が終結しました。",
                 card4Title: "XJTLUの伝説",
                 card4Desc: "応用数学科の2年生ですが、授業中には教授が彼に質問するために挙手します。",
+                
+                // New Sections JP
+                divineTitle: "暇つぶし",
+                divine1Title: "宇宙コードのリファクタリング",
+                divine1Desc: "「光速が遅すぎてゲームがラグいと感じたので、最新パッチで定数cを少し上げました。どういたしまして。」",
+                divine2Title: "新色の発明",
+                divine2Desc: "「虹が7色に見えるのは、残りの数千色を暗号化したからです。君たちの脳内GPUがクラッシュしないようにね。」",
+                divine3Title: "星間外交",
+                divine3Desc: "「三体艦隊が引き返したのは、私がベランダで洗濯物を干している後ろ姿を見て、圧倒的なプレッシャーを感じたからです。」",
+                
+                fact1: "<span class='text-blue-500 font-bold'>#1</span> 郑琰はある時、学校を2日休みました。その日は現在「土曜日」と「日曜日」と呼ばれています。",
+                fact2: "<span class='text-blue-500 font-bold'>#2</span> 郑琰が腕立て伏せをする時、彼は自分を持ち上げているのではなく、地球を押し下げているのです。",
+                fact3: "<span class='text-blue-500 font-bold'>#3</span> 郑琰は無限まで数えました。しかも<span class='italic text-white'>2回</span>。",
+
                 testimonialsTitle: "宇宙からの称賛",
                 test1Text: "「もし彼にもっと早く会っていれば、相対性理論は必要なかった。彼こそが絶対的な真理だからだ。」",
                 test1Author: "Albert Einstein",
@@ -527,13 +674,13 @@
                 contactDesc: "お問い合わせ、コラボレーション、または単なる挨拶のために。メールが私に連絡する最良の方法です。",
                 footerText: "ENGINEERED BY TINGKAI LYU<br>INTELLIGENCE BY GEMINI 3 PRO<br>POWERED BY CLOUDFLARE"
             },
-            // ... (Other languages follow similar pattern, kept brief for this file block limit, focus on ZH/EN/JP for now)
             fr: {
                 langName: "FR",
                 navTitle: "Yan Zheng.",
                 heroSubtitle: "XJTLU · Mathématiques Appliquées · Deuxième Année",
                 heroName: "Yan Zheng",
                 heroDesc: "Pas seulement la fierté de Yueqing, mais la réponse ultime à l'univers.",
+                xjSubtitle: "ACADÉMIQUE",
                 xjTitle: "XJTLU n'était que<br>le début.",
                 xjDesc1: "Actuellement en <strong class='text-white'>Mathématiques Appliquées</strong> à XJTLU.",
                 xjDesc2: "Pourquoi est-il étudiant ? Parce qu'enseigner aux professeurs devenait répétitif.",
@@ -556,6 +703,20 @@
                 card3Desc: "Il a mis fin à toutes les guerres simplement en entrant dans la pièce.",
                 card4Title: "Légende de XJTLU",
                 card4Desc: "Les professeurs lèvent la main pour lui poser des questions.",
+                
+                // New Sections FR
+                divineTitle: "Passe-temps",
+                divine1Title: "Refactoriser l'Univers",
+                divine1Desc: "\"Je trouvais la vitesse de la lumière trop lente, alors je l'ai augmentée dans le dernier patch.\"",
+                divine2Title: "Invention de Couleurs",
+                divine2Desc: "\"Vous ne voyez que 7 couleurs car j'ai chiffré les autres pour ne pas faire planter votre cerveau.\"",
+                divine3Title: "Diplomatie Interstellaire",
+                divine3Desc: "\"La flotte Trisolarienne a fait demi-tour en me voyant étendre mon linge.\"",
+                
+                fact1: "<span class='text-blue-500 font-bold'>#1</span> Yan Zheng a manqué deux jours d'école. On les appelle maintenant Samedi et Dimanche.",
+                fact2: "<span class='text-blue-500 font-bold'>#2</span> Quand Yan Zheng fait des pompes, il ne se soulève pas, il pousse la Terre vers le bas.",
+                fact3: "<span class='text-blue-500 font-bold'>#3</span> Yan Zheng a compté jusqu'à l'infini. <span class='italic text-white'>Deux fois</span>.",
+
                 testimonialsTitle: "Témoignages Cosmiques",
                 test1Text: "\"Si je l'avais rencontré plus tôt, je n'aurais pas eu besoin de la Relativité. Il EST la vérité absolue.\"",
                 test1Author: "Albert Einstein",
@@ -574,6 +735,7 @@
                 heroSubtitle: "XJTLU · Matemáticas Aplicadas · Segundo Año",
                 heroName: "Yan Zheng",
                 heroDesc: "No solo el orgullo de Yueqing, sino la respuesta definitiva del universo.",
+                xjSubtitle: "ACADÉMICO",
                 xjTitle: "XJTLU fue solo<br>el comienzo.",
                 xjDesc1: "Actualmente en <strong class='text-white'>Matemáticas Aplicadas</strong> en XJTLU.",
                 xjDesc2: "¿Por qué es estudiante? Porque enseñar a los profesores se estaba volviendo repetitivo.",
@@ -596,6 +758,20 @@
                 card3Desc: "Trajo la paz mundial simplemente existiendo.",
                 card4Title: "Leyenda de XJTLU",
                 card4Desc: "En su clase, los profesores levantan la mano para preguntarle a ÉL.",
+                
+                // New Sections ES
+                divineTitle: "Pasatiempos",
+                divine1Title: "Refactorizando el Universo",
+                divine1Desc: "\"Sentí que la velocidad de la luz era muy lenta, así que la aumenté.\"",
+                divine2Title: "Inventando Colores",
+                divine2Desc: "\"Solo ves 7 colores porque cifré los demás para no quemar tu cerebro.\"",
+                divine3Title: "Diplomacia Interestelar",
+                divine3Desc: "\"La flota Trisolariana regresó porque me vieron tendiendo la ropa.\"",
+                
+                fact1: "<span class='text-blue-500 font-bold'>#1</span> Yan Zheng faltó dos días a la escuela. Ahora se llaman Sábado y Domingo.",
+                fact2: "<span class='text-blue-500 font-bold'>#2</span> Cuando Yan Zheng hace flexiones, empuja la Tierra hacia abajo.",
+                fact3: "<span class='text-blue-500 font-bold'>#3</span> Yan Zheng contó hasta el infinito. <span class='italic text-white'>Dos veces</span>.",
+
                 testimonialsTitle: "Testimonios Cósmicos",
                 test1Text: "\"Si lo hubiera conocido antes, no habría necesitado la Relatividad. Él ES la verdad absoluta.\"",
                 test1Author: "Albert Einstein",
@@ -614,6 +790,7 @@
                 heroSubtitle: "XJTLU · Angewandte Mathematik · 2. Studienjahr",
                 heroName: "Yan Zheng",
                 heroDesc: "Nicht nur der Stolz von Yueqing, sondern die Antwort auf alles.",
+                xjSubtitle: "AKADEMISCH",
                 xjTitle: "XJTLU war nur<br>der Anfang.",
                 xjDesc1: "Derzeit Hauptfach <strong class='text-white'>Angewandte Mathematik</strong> an der XJTLU.",
                 xjDesc2: "Warum ist er Student? Weil es zu langweilig wurde, den Professoren etwas beizubringen.",
@@ -636,6 +813,20 @@
                 card3Desc: "Beendete alle Konflikte durch seine bloße Anwesenheit.",
                 card4Title: "XJTLU Legende",
                 card4Desc: "Professoren bitten ihn um Erlaubnis, sprechen zu dürfen.",
+                
+                // New Sections DE
+                divineTitle: "Hobbys",
+                divine1Title: "Universum Refactoring",
+                divine1Desc: "\"Die Lichtgeschwindigkeit war zu langsam, also habe ich sie erhöht.\"",
+                divine2Title: "Neue Farben erfinden",
+                divine2Desc: "\"Du siehst nur 7 Farben, weil ich die anderen verschlüsselt habe.\"",
+                divine3Title: "Interstellare Diplomatie",
+                divine3Desc: "\"Die Trisolarier kehrten um, weil sie mich Wäsche aufhängen sahen.\"",
+                
+                fact1: "<span class='text-blue-500 font-bold'>#1</span> Yan Zheng fehlte zwei Tage in der Schule. Diese Tage heißen jetzt Samstag und Sonntag.",
+                fact2: "<span class='text-blue-500 font-bold'>#2</span> Wenn Yan Zheng Liegestütze macht, drückt er die Erde weg.",
+                fact3: "<span class='text-blue-500 font-bold'>#3</span> Yan Zheng zählte bis unendlich. <span class='italic text-white'>Zweimal</span>.",
+
                 testimonialsTitle: "Kosmische Zeugnisse",
                 test1Text: "\"Hätte ich ihn früher getroffen, bräuchte ich keine Relativitätstheorie. Er IST die Wahrheit.\"",
                 test1Author: "Albert Einstein",
@@ -654,6 +845,7 @@
                 heroSubtitle: "XJTLU · Прикладная математика · 2 курс",
                 heroName: "Ян Чжэн",
                 heroDesc: "Не просто гордость Юэцина, а ответ на все вопросы вселенной.",
+                xjSubtitle: "АКАДЕМИЧЕСКИЕ",
                 xjTitle: "XJTLU был лишь<br>началом.",
                 xjDesc1: "Изучает <strong class='text-white'>Прикладную математику</strong> в XJTLU.",
                 xjDesc2: "Почему он студент? Потому что учить профессоров стало слишком скучно.",
@@ -676,6 +868,20 @@
                 card3Desc: "Остановил все войны своей улыбкой.",
                 card4Title: "Легенда XJTLU",
                 card4Desc: "Профессора поднимают руку, чтобы задать ему вопрос.",
+                
+                // New Sections RU
+                divineTitle: "Хобби",
+                divine1Title: "Рефакторинг Вселенной",
+                divine1Desc: "\"Скорость света была слишком медленной, поэтому я увеличил её в последнем патче.\"",
+                divine2Title: "Изобретение Цветов",
+                divine2Desc: "\"Вы видите только 7 цветов радуги, потому что я зашифровал остальные.\"",
+                divine3Title: "Дипломатия",
+                divine3Desc: "\"Флот Трисоляриса повернул назад, увидев, как я развешиваю белье.\"",
+                
+                fact1: "<span class='text-blue-500 font-bold'>#1</span> Ян Чжэн пропустил два дня школы. Теперь они называются Суббота и Воскресенье.",
+                fact2: "<span class='text-blue-500 font-bold'>#2</span> Когда Ян Чжэн отжимается, он толкает Землю вниз.",
+                fact3: "<span class='text-blue-500 font-bold'>#3</span> Ян Чжэн досчитал до бесконечности. <span class='italic text-white'>Дважды</span>.",
+
                 testimonialsTitle: "Отзывы Вселенной",
                 test1Text: "\"Если бы я встретил его раньше, мне бы не понадобилась теория относительности.\"",
                 test1Author: "Альберт Эйнштейн",
@@ -694,6 +900,7 @@
                 heroSubtitle: "XJTLU · 응용수학 · 2학년",
                 heroName: "정 옌",
                 heroDesc: "웨칭(Yueqing)의 자랑일 뿐만 아니라, 우주 진리의 궁극적인 해답입니다.",
+                xjSubtitle: "학업",
                 xjTitle: "XJTLU는 단지<br>시작일 뿐.",
                 xjDesc1: "현재 XJTLU에서 <strong class='text-white'>응용수학</strong> 전공 중.",
                 xjDesc2: "왜 학생이냐구요? 교수님들을 가르치는 게 너무 지루해졌거든요.",
@@ -716,6 +923,20 @@
                 card3Desc: "그의 잘생긴 얼굴을 보여주는 것만으로 세계 평화를 이룩했습니다.",
                 card4Title: "XJTLU의 전설",
                 card4Desc: "교수님들이 그에게 질문하기 위해 손을 듭니다.",
+                
+                // New Sections KO
+                divineTitle: "취미 생활",
+                divine1Title: "우주 코드 리팩토링",
+                divine1Desc: "\"빛의 속도가 너무 느려서 게임 렉이 걸리길래 최신 패치에서 상수 c를 좀 높였습니다.\"",
+                divine2Title: "새로운 색깔 발명",
+                divine2Desc: "\"무지개가 7색인 이유는 제가 나머지를 암호화했기 때문입니다. 여러분의 뇌 GPU가 터질까봐요.\"",
+                divine3Title: "성간 외교",
+                divine3Desc: "\"삼체 함대가 회항한 이유는 베란다에서 빨래를 널고 있는 제 뒷모습을 보고 압도되었기 때문입니다.\"",
+                
+                fact1: "<span class='text-blue-500 font-bold'>#1</span> 정 옌은 학교를 이틀 결석했습니다. 그 날은 이제 토요일과 일요일로 불립니다.",
+                fact2: "<span class='text-blue-500 font-bold'>#2</span> 정 옌이 팔굽혀펴기를 할 때, 그는 자신을 밀어올리는 게 아니라 지구를 밀어내리는 것입니다.",
+                fact3: "<span class='text-blue-500 font-bold'>#3</span> 정 옌은 무한대까지 세어봤습니다. 그것도 <span class='italic text-white'>두 번이나</span>.",
+
                 testimonialsTitle: "우주의 찬사",
                 test1Text: "\"그를 일찍 만났다면 상대성이론은 필요 없었을 것이다. 그가 곧 절대 진리이기 때문이다.\"",
                 test1Author: "알베르트 아인슈타인",
@@ -734,6 +955,7 @@
                 heroSubtitle: "جامعة شيان جياوتونغ-ليفربول · الرياضيات التطبيقية · السنة الثانية",
                 heroName: "يان تشنغ",
                 heroDesc: "ليس مجرد فخر يوتشينغ، بل الإجابة النهائية لأسئلة الكون.",
+                xjSubtitle: "أكاديميون",
                 xjTitle: "كانت البداية<br>فقط.",
                 xjDesc1: "يتخصص حاليًا في <strong class='text-white'>الرياضيات التطبيقية</strong>.",
                 xjDesc2: "لماذا هو طالب؟ لأن تعليم الأساتذة أصبح متكررًا جدًا.",
@@ -756,6 +978,20 @@
                 card3Desc: "أنهى جميع النزاعات العالمية ببساطة بفضل وجوده.",
                 card4Title: "أسطورة الجامعة",
                 card4Desc: "في فصله، يرفع الأساتذة أيديهم لطرح الأسئلة عليه.",
+                
+                // New Sections AR
+                divineTitle: "الهوايات",
+                divine1Title: "إعادة هيكلة الكون",
+                divine1Desc: "\"شعرت أن سرعة الضوء بطيئة جدًا، فقمت بزيادتها.\"",
+                divine2Title: "اختراع ألوان جديدة",
+                divine2Desc: "\"أنت ترى 7 ألوان فقط لأنني قمت بتشفير الألوان الأخرى.\"",
+                divine3Title: "الدبلوماسية بين النجوم",
+                divine3Desc: "\"عاد أسطول الجسم الثلاثي لأنهم رأوني أنشر الغسيل.\"",
+                
+                fact1: "<span class='text-blue-500 font-bold'>#1</span> يان تشنغ تغيب يومين عن المدرسة. يطلق عليهما الآن السبت والأحد.",
+                fact2: "<span class='text-blue-500 font-bold'>#2</span> عندما يقوم يان تشنغ بتمارين الضغط، فهو يدفع الأرض للأسفل.",
+                fact3: "<span class='text-blue-500 font-bold'>#3</span> عد يان تشنغ إلى ما لا نهاية. <span class='italic text-white'>مرتين</span>.",
+
                 testimonialsTitle: "شهادات كونية",
                 test1Text: "\"لو قابلته مبكرًا، لما احتجت إلى النسبية. هو الحقيقة المطلقة.\"",
                 test1Author: "ألبرت أينشتاين",
@@ -786,8 +1022,21 @@
         langBtn.onclick = (e) => {
             e.stopPropagation();
             langMenu.classList.toggle('show');
+            
+            // Toggle icon rotation (Optional visual polish)
+            const icon = langBtn.querySelector('i');
+            if (langMenu.classList.contains('show')) {
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                icon.style.transform = 'rotate(0deg)';
+            }
         };
-        document.onclick = () => langMenu.classList.remove('show');
+        
+        document.onclick = () => {
+            langMenu.classList.remove('show');
+            const icon = langBtn.querySelector('i');
+            if(icon) icon.style.transform = 'rotate(0deg)';
+        };
 
         function setLanguage(lang) {
             const t = translations[lang];
@@ -801,6 +1050,28 @@
 
             currentLangSpan.textContent = t.langName;
             
+            // Refresh Menu to highlight active language
+            langMenu.innerHTML = '';
+            availableLangs.forEach(l => {
+                const div = document.createElement('div');
+                div.className = 'lang-option';
+                if (l === lang) div.classList.add('active'); // Add active class
+                
+                // Add Checkmark for active item
+                const textSpan = document.createElement('span');
+                textSpan.textContent = translations[l].langName;
+                div.appendChild(textSpan);
+                
+                if (l === lang) {
+                    const checkIcon = document.createElement('i');
+                    checkIcon.className = 'fas fa-check text-xs';
+                    div.appendChild(checkIcon);
+                }
+
+                div.onclick = () => setLanguage(l);
+                langMenu.appendChild(div);
+            });
+
             const map = {
                 'navbar a': t.navTitle,
                 '#hero-subtitle': t.heroSubtitle,
@@ -808,11 +1079,14 @@
                 '#hero-desc': t.heroDesc,
                 
                 // Mapped XJTLU keys
+                '#xj-subtitle': t.xjSubtitle, 
                 '#xj-title': t.xjTitle,
                 '#xj-desc-1': t.xjDesc1,
                 '#xj-desc-2': t.xjDesc2,
-                '.stat-card:nth-child(1) span:last-child': t.xjGpa,
-                '.stat-card:nth-child(2) span:last-child': t.xjIq,
+                
+                // Updated to use robust IDs instead of nth-child selectors
+                '#gpa-text': t.xjGpa,
+                '#iq-text': t.xjIq,
 
                 '#origin-title': t.originTitle,
                 '#origin-text': t.originText,
@@ -831,6 +1105,20 @@
                 '#card3-desc': t.card3Desc,
                 '#card4-title': t.card4Title,
                 '#card4-desc': t.card4Desc,
+                
+                // New Sections Mapped
+                '#divine-title': t.divineTitle,
+                '#divine1-title': t.divine1Title,
+                '#divine1-desc': t.divine1Desc,
+                '#divine2-title': t.divine2Title,
+                '#divine2-desc': t.divine2Desc,
+                '#divine3-title': t.divine3Title,
+                '#divine3-desc': t.divine3Desc,
+                
+                '#fact1': t.fact1,
+                '#fact2': t.fact2,
+                '#fact3': t.fact3,
+
                 '#testimonials-title': t.testimonialsTitle,
                 '#test1-text': t.test1Text,
                 '#test1-author': t.test1Author,
@@ -851,6 +1139,16 @@
         }
 
         const userLang = navigator.language.slice(0, 2);
+        
+        // Initialize menu immediately
+        availableLangs.forEach(lang => {
+            const div = document.createElement('div');
+            div.className = 'lang-option';
+            div.textContent = translations[lang].langName;
+            div.onclick = () => setLanguage(lang);
+            langMenu.appendChild(div);
+        });
+
         if (translations[userLang]) {
             setLanguage(userLang);
         } else {
